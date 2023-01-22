@@ -119,7 +119,7 @@ def shortestPath(xx, yy):
 			leftPath.append((lv, numOfNodes))
 			#print(f'leftPath={leftPath}')
 			break
-		elif largerMBI(x.val, y.val):
+		elif MBI.larger(x.val, y.val):
 			# x > y
 			#print('BBB y < x')
 			break
