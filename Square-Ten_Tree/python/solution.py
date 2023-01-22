@@ -1,7 +1,6 @@
+
 def solution(l, r):
-	ll = list(l)
-	rr = list(r)
-	path = shortestPath(ll, rr)
+	path = shortestPath(l, r)
 	n = len(path)
 	print(n)
 	for tc in path:
@@ -9,18 +8,21 @@ def solution(l, r):
 		c = tc[1]
 		print(f'{t} {c}')
 
-def shortestPath(x, y):
-	#print(f'000 {x}, {y}')
-	decrement1MBI(x)
-	decrement1MBI(y)
-	#print(f'010 minus1: {x}, {y}')
+def shortestPath(xx, yy):
+	#print(f'000 {xx}, {yy}')
+
+	xx, _ = minusMBIStr(xx, '1')
+	yy, _ = minusMBIStr(yy, '1')
+
+	x = list(xx)
+	y = list(yy)
 
 	leftPath = []
 	rightPath = []
 
 	lv = 0
-	xCurrentIdx = getCurrentDigitsLv0(x)
-	yCurrentIdx = getCurrentDigitsLv0(y)
+	xCurrentIdx = getCurrentDigits(x, lv)
+	yCurrentIdx = getCurrentDigits(y, lv)
 	while True:
 		#print(f'level {lv}: {xCurrentIdx}, {yCurrentIdx}')
 		if equalsMBI(x, y):
@@ -46,8 +48,7 @@ def shortestPath(x, y):
 			xParentIdx, passingNodes = moveToNextParentNode(xCurrentIdx, x, lv)
 			if passingNodes is not None:
 				leftPath.append(passingNodes)
-			#print(f'CCC 100 {xParentIdx}')
-			yParentIdx, passingNodes = moveToPrevParentNode(yCurrentIdx, y, lv)
+			yParentIdx, passingNodes, y = moveToPrevParentNode(yCurrentIdx, y, lv)
 			if passingNodes is not None:
 				rightPath.append(passingNodes)
 			#print(f'CCC 999 {xParentIdx}, {yParentIdx}')
@@ -71,11 +72,6 @@ def mergePath(lp, rp):
 	lp.extend(reversed(rp))
 	return lp
 
-
-
-def getCurrentDigitsLv0(a):
-	d = list(a.pop())
-	return d
 
 def getCurrentDigits(a, lv):
 	interval = getInterval(lv)
@@ -126,12 +122,15 @@ def moveToNextParentNode(idx, a, lv):
 def moveToPrevParentNode(idx, a, lv):
 	if atRightEnd(idx, lv):
 		pIdx = getCurrentDigits(a, lv+1)
-		return pIdx, None
+		return pIdx, None, a
 	else:
-		reIdx, pathElem = movToLeftEnd(idx, a, lv)	
-		decrement1MBI(a)
+		_, pathElem = movToLeftEnd(idx, a, lv)	
+		#decrement1MBI(a)
+		aStr = ''.join(a)
+		aaStr, _ = minusMBIStr(aStr, '1')
+		a = list(aaStr)
 		pIdx = getCurrentDigits(a, lv+1)
-		return pIdx, pathElem
+		return pIdx, pathElem, a
 
 # interval
 # 0: X
@@ -201,15 +200,6 @@ def minus1D(c):
 	u = ord(c) - 1
 	return chr(u), False
 
-# Modify the input list
-def decrement1MBI(x):
-	carry = False
-	for i in range(len(x)-1, -1, -1):
-		x[i], carry = minus1D(x[i])
-		if not carry:
-			break
-	return x, carry
-
 # Mutable
 def increment1MBI(x):
 	if len(x) == 0:
@@ -225,23 +215,14 @@ def increment1MBI(x):
 	return x
 
 # Immutable
-def minusMBIOld(x, y): # x - y (x > y)
-	z = []
-	carry = False
-	for i in range(len(x)-1, -1, -1):
-		tmp = x[i]
-		if carry:
-			tmp, carry = minus1D(tmp)
-		tmp, carry1 = minusD(tmp, y[i])
-		carry = carry or carry1
-		z.append(tmp)
-	return list(reversed(z)), carry
-
-def minusMBI(x, y): # x - y (x >= y)
-	BLOCK_SIZE = 10
-	CARRY_VALUE = 10 ** BLOCK_SIZE
+def minusMBI(x, y):
 	xx = ''.join(x)
 	yy = ''.join(y)
+	return minusMBIStr(xx, yy)
+
+def minusMBIStr(xx, yy): # x - y (x >= y)
+	BLOCK_SIZE = 10
+	CARRY_VALUE = 10 ** BLOCK_SIZE
 
 	length = (max(len(xx), len(yy)) // BLOCK_SIZE + 1) * BLOCK_SIZE
 
