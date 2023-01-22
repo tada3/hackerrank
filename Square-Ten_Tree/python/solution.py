@@ -1,4 +1,83 @@
 
+class MBI:
+	block_size = 10
+	block_val = 10 ** block_size
+	
+	def __init__(self, v):
+		self.val = v
+		self.pos = 0
+
+	@classmethod
+	def minus(cls, xx, yy): # x - y (x >= y)
+
+		length = (max(len(xx), len(yy)) // cls.block_size + 1) * cls.block_size
+
+		xx = '0' * (length - len(xx)) + xx
+		yy = '0' * (length - len(yy)) + yy
+
+		result = ""
+		carry = 0
+		for i in range(length, 0, -cls.block_size):
+			tmpX = int(xx[i - cls.block_size:i])
+			tmpY = int(yy[i - cls.block_size:i])
+			delta = tmpX - tmpY - carry
+			if delta < 0:
+				delta += cls.block_val
+				carry = 1
+			else:
+				carry = 0
+			deltaS = str(delta)
+			result = '0' * (cls.block_size - len(deltaS)) + deltaS + result
+
+		result = trimZero(result)
+		return result, carry > 0
+
+	@classmethod
+	def equals(cls, x, y):
+		lenX = len(x)
+		lenY = len(y)
+		if lenX != lenY:
+			return False
+
+		if x == y:
+			return True
+
+		delta, carry = cls.minus(x, y)
+		if carry:
+			return False
+		return delta == '0'
+
+	# Check x > y or not
+	@classmethod
+	def larger(cls, x, y):
+		lenX = len(x)
+		lenY = len(y)
+
+		if lenX > lenY:
+			return True
+		if lenX < lenY:
+			return False
+
+		if x == y:
+			return False
+
+		delta, carry = minusMBI(x, y)
+		if carry:
+			return False
+		return delta != '0'
+	
+	def getCurrentDigits(self, lv):
+		length = getInterval(lv)
+		end = len(self.val) - self.pos
+		if end <= 0:
+			return '0' * length
+		start = end - length
+		if start < 0:
+			return '0' * (length - end) + self.val[:end]
+		return self.val[start:end]
+
+
+
 def solution(l, r):
 	path = shortestPath(l, r)
 	n = len(path)
@@ -11,8 +90,66 @@ def solution(l, r):
 def shortestPath(xx, yy):
 	#print(f'000 {xx}, {yy}')
 
-	xx, _ = minusMBIStr(xx, '1')
-	yy, _ = minusMBIStr(yy, '1')
+	xx, _ = MBI.minus(xx, '1')
+	yy, _ = MBI.minus(yy, '1')
+
+	x = MBI(xx)
+	y = MBI(yy)
+
+
+	leftPath = []
+	rightPath = []
+
+	lv = 0
+	xCurrentIdx = x.getCurrentDigits(lv)
+	yCurrentIdx = y.getCurrentDigits(lv)
+	while True:
+		print(f'level {lv}: {xCurrentIdx}, {yCurrentIdx}')
+		if MBI.equals(x.val, y.val):
+			# In the same parent node
+			#print('AAA x == y')
+			if MBI.larger(xCurrentIdx, yCurrentIdx):
+				# Do not need to count nodes in this level
+				break
+			if atLeftEnd(xCurrentIdx, lv) and atRightEnd(yCurrentIdx, lv):
+				leftPath.append((lv + 1, 1))
+				break
+			delta, _ = minusMBI(yCurrentIdx, xCurrentIdx)
+			numOfNodes = mbi2Int(delta) + 1
+			leftPath.append((lv, numOfNodes))
+			#print(f'leftPath={leftPath}')
+			break
+		elif largerMBI(x.val, y.val):
+			# x > y
+			#print('BBB y < x')
+			break
+		else:
+			#print('CCC x < y')
+			xParentIdx, passingNodes = moveToNextParentNode(xCurrentIdx, x, lv)
+			if passingNodes is not None:
+				leftPath.append(passingNodes)
+			yParentIdx, passingNodes, y = moveToPrevParentNode(yCurrentIdx, y, lv)
+			if passingNodes is not None:
+				rightPath.append(passingNodes)
+			#print(f'CCC 999 {xParentIdx}, {yParentIdx}')
+
+		xCurrentIdx = xParentIdx
+		yCurrentIdx = yParentIdx
+		lv += 1
+
+	#print(f'999 {leftPath}, {rightPath}')
+	return mergePath(leftPath, rightPath)
+	
+
+
+def shortestPathOld(xx, yy):
+	#print(f'000 {xx}, {yy}')
+
+	xx, _ = MBI.minus(xx, '1')
+	yy, _ = MBI.minus(yy, '1')
+
+	xxx = MBI(xx)
+	yyy = MBI(yy)
 
 	x = list(xx)
 	y = list(yy)
@@ -252,7 +389,7 @@ def trimZero(x):
 			continue
 		else:
 			return x[i:]
-	return ''
+	return '0'
 
 
 def mbi2Int(x):
