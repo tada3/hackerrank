@@ -203,7 +203,6 @@ def minus1D(c):
 
 # Modify the input list
 def decrement1MBI(x):
-	print(f'XXX decrementMBI {x}, {type(x)}')
 	carry = False
 	for i in range(len(x)-1, -1, -1):
 		x[i], carry = minus1D(x[i])
@@ -226,7 +225,7 @@ def increment1MBI(x):
 	return x
 
 # Immutable
-def minusMBI(x, y): # x - y (x > y)
+def minusMBIOld(x, y): # x - y (x > y)
 	z = []
 	carry = False
 	for i in range(len(x)-1, -1, -1):
@@ -237,6 +236,43 @@ def minusMBI(x, y): # x - y (x > y)
 		carry = carry or carry1
 		z.append(tmp)
 	return list(reversed(z)), carry
+
+def minusMBI(x, y): # x - y (x >= y)
+	BLOCK_SIZE = 10
+	CARRY_VALUE = 10 ** BLOCK_SIZE
+	xx = ''.join(x)
+	yy = ''.join(y)
+
+	length = (max(len(xx), len(yy)) // BLOCK_SIZE + 1) * BLOCK_SIZE
+
+	xx = '0' * (length - len(xx)) + xx
+	yy = '0' * (length - len(yy)) + yy
+
+	result = ""
+	carry = 0
+	for i in range(length, 0, -BLOCK_SIZE):
+		tmpX = int(xx[i - BLOCK_SIZE:i])
+		tmpY = int(yy[i - BLOCK_SIZE:i])
+		delta = tmpX - tmpY - carry
+		if delta < 0:
+			delta += CARRY_VALUE
+			carry = 1
+		else:
+			carry = 0
+		deltaS = str(delta)
+		result = '0' * (BLOCK_SIZE - len(deltaS)) + deltaS + result
+
+	result = trimZero(result)
+	return list(result), carry > 0
+
+def trimZero(x):
+	for i in range(len(x)):
+		if x[i] == '0':
+			continue
+		else:
+			return x[i:]
+	return ''
+
 
 def mbi2Int(x):
 	y = 0
@@ -289,6 +325,11 @@ r = "10"
 #l = "1"
 #r = "100"
 
+#l = "12345667"
+#r = "2343526222"
+#print(f'input: {l}, {r}')
 
-print(f'input: {l}, {r}')
+l = input()
+r = input()
 solution(l, r)
+
