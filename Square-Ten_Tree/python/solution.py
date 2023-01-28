@@ -124,6 +124,13 @@ class MBI:
 		self.val = y
 
 	def getCurrentDigits(self, lv):
+		width = self.getInterval(lv)
+		start = self.len() - width
+		if start < 0:
+			return '0' * (width - self.len()) + self.val
+		return self.val[start:]
+
+	def getCurrentDigitsXXX(self, lv):
 		width = self.getWidth(lv)
 		prevWidth = self.getWidth(lv - 1) if lv >= 1 else 0
 		len = width - prevWidth
@@ -137,8 +144,8 @@ class MBI:
 		return self.val[start:end]
 
 	def moveToUpper(self, lv):
-		width = self.getWidth(lv)
-		self.val = self.val[:-width] + '0' * width
+		removed = self.getInterval(lv)
+		self.val = self.val[:-removed]
 
 	
 
@@ -238,7 +245,7 @@ def moveToNextParentNode(idx, a, lv):
 		return None
 	else:
 		_, pathElem = moveToRightEnd(idx, lv)	
-		one = '1' + '0' * MBI.getWidth(lv)
+		one = '1' + '0' * MBI.getInterval(lv)
 		a.add(one)
 		return pathElem
 
@@ -247,7 +254,7 @@ def moveToPrevParentNode(idx, a, lv):
 		return None
 	else:
 		_, pathElem = moveToLeftEnd(idx, lv)	
-		one = '1' + '0' * MBI.getWidth(lv)
+		one = '1' + '0' * MBI.getInterval(lv)
 		a.subtract(one)
 		return pathElem
 
