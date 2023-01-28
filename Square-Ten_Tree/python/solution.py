@@ -8,6 +8,34 @@ class MBI:
 		self.pos = 0
 
 	@classmethod
+	def plus(cls, x, y, lv):
+		length = (max(len(x), len(y)) // cls.block_size + 1) * cls.block_size
+
+		x = '0' * (length - len(x)) + x
+		y = '0' * (length - len(y)) + y
+
+		result = ""
+		carry = 0
+		for i in range(length, 0, -cls.block_size):
+			tmpX = int(xx[i - cls.block_size:i])
+			tmpY = int(yy[i - cls.block_size:i])
+			sum = tmpX + tmpY + carry
+			delta = tmpX - tmpY - carry
+			if sum > cls.block_val:
+				carry = 1
+				sum -= cls.block_val
+			else:
+				carry = 0
+			sumS = str(sum)
+			result = '0' * (cls.block_size - len(sumS)) + sumS + result
+
+		if carry > 0:
+			result = '1' + result
+		result = trimZero(result)
+		return result, carry > 0
+
+
+	@classmethod
 	def minus(cls, xx, yy): # x - y (x >= y)
 
 		length = (max(len(xx), len(yy)) // cls.block_size + 1) * cls.block_size
@@ -65,9 +93,32 @@ class MBI:
 		if carry:
 			return False
 		return delta != '0'
+
+	@classmethod
+	def getInterval2(cls, lv):
+		if lv == 0:
+			return 1
+		return 2**(lv-1)
+
+	def len(self):
+		return len(self.val)
+
+	@classmethod
+	def getWidth(cls, lv):
+		if lv == 0:
+			return 1
+		return 2**(lv-1) + 1
+
+	def add(self, x):
+		y = self.plus(self.val, x)
+		self.val = y
+
+	def subtract(self, x):
+		y = self.minus(self.val, x)
+		self.val = y
 	
 	def getCurrentDigits(self, lv):
-		length = getInterval(lv)
+		length = self.getInterval2(lv)
 		end = len(self.val) - self.pos
 		if end <= 0:
 			return '0' * length
@@ -76,7 +127,20 @@ class MBI:
 			return '0' * (length - end) + self.val[:end]
 		return self.val[start:end]
 
+	def getCurrentDigits2(self, lv):
+		width = self.getWidth(lv)
+		prevWidth = self.getWidth(lv - 1) if lv >= 1 else 0
+		len = width - prevWidth
 
+		end = self.len() - prevWidth
+		if end < 0:
+			return '0' * len
+		start = self.len() - width
+		if start < 0:
+			return '0' * (len - end) + self.val[:end]
+		return self.val[start:end]
+
+	
 
 def solution(l, r):
 	path = shortestPath(l, r)
@@ -101,8 +165,8 @@ def shortestPath(xx, yy):
 	rightPath = []
 
 	lv = 0
-	xCurrentIdx = x.getCurrentDigits(lv)
-	yCurrentIdx = y.getCurrentDigits(lv)
+	xCurrentIdx = x.getCurrentDigits2(lv)
+	yCurrentIdx = y.getCurrentDigits2(lv)
 	while True:
 		print(f'level {lv}: {xCurrentIdx}, {yCurrentIdx}')
 		if MBI.equals(x.val, y.val):
@@ -125,10 +189,10 @@ def shortestPath(xx, yy):
 			break
 		else:
 			#print('CCC x < y')
-			xParentIdx, passingNodes = moveToNextParentNode(xCurrentIdx, x, lv)
+			xParentIdx, passingNodes = moveToNextParentNode2(xCurrentIdx, x, lv)
 			if passingNodes is not None:
 				leftPath.append(passingNodes)
-			yParentIdx, passingNodes, y = moveToPrevParentNode(yCurrentIdx, y, lv)
+			yParentIdx, passingNodes = moveToPrevParentNode2(yCurrentIdx, y, lv)
 			if passingNodes is not None:
 				rightPath.append(passingNodes)
 			#print(f'CCC 999 {xParentIdx}, {yParentIdx}')
@@ -232,12 +296,26 @@ def rightEndIdx(lv):
 	width = getInterval(lv)
 	return ['9' for _ in range(width)]
 		
+def movToRightEnd2(idx, lv):
+	reIdx = rightEndIdx(lv)
+	delta, _ = minusMBI(reIdx, idx)
+	numOfNodes = mbi2Int(delta) + 1
+	pathElem = (lv, numOfNodes)
+	return reIdx, pathElem
+
 def movToRightEnd(idx, a, lv):
 	reIdx = rightEndIdx(lv)
 	delta, _ = minusMBI(reIdx, idx)
 	numOfNodes = mbi2Int(delta) + 1
 	pathElem = (lv, numOfNodes)
 	return reIdx, pathElem
+
+def movToLeftEnd2(idx, lv):
+	leftEnd = leftEndIdx(lv)
+	delta, _ = minusMBI(idx, leftEnd)
+	numOfNodes = mbi2Int(delta) + 1
+	pathElem = (lv, numOfNodes)
+	return leftEnd, pathElem
 
 def movToLeftEnd(idx, a, lv):
 	leftEnd = leftEndIdx(lv)
@@ -246,23 +324,45 @@ def movToLeftEnd(idx, a, lv):
 	pathElem = (lv, numOfNodes)
 	return leftEnd, pathElem
 
-def moveToNextParentNode(idx, a, lv):
+def moveToNextParentNode2(idx, a, lv):
 	if atLeftEnd(idx, lv):
-		pIdx = getCurrentDigits(a, lv+1)
+		pIdx = a.getCurrentDigits2(lv+1)
 		return pIdx, None
 	else:
-		reIdx, pathElem = movToRightEnd(idx, a, lv)	
+		_, pathElem = movToRightEnd2(idx, lv)	
+		one = '1' + '0' * (MBI.getWidth(lv+1) - 1)
+		a.add(one)
+		pIdx = a.getCurrentDigits(lv+1)
+		return pIdx, pathElem
+
+
+def moveToNextParentNode(idx, a, lv):
+	if atLeftEnd(idx, lv):
+		pIdx = a.getCurrentDigits(lv+1)
+		return pIdx, None
+	else:
+		_, pathElem = movToRightEnd(idx, a, lv)	
 		increment1MBI(a)
 		pIdx = getCurrentDigits(a, lv+1)
 		return pIdx, pathElem
 
+def moveToPrevParentNode2(idx, a, lv):
+	if atRightEnd(idx, lv):
+		pIdx = a.getCurrentDigits(lv+1)
+		return pIdx, None
+	else:
+		_, pathElem = movToLeftEnd2(idx, lv)	
+		one = '1' + '0' * (MBI.getWidth(lv+1) - 1)
+		a.subtract(one)
+		pIdx = a.getCurrentDigits(lv+1)
+		return pIdx, pathElem
+
 def moveToPrevParentNode(idx, a, lv):
 	if atRightEnd(idx, lv):
-		pIdx = getCurrentDigits(a, lv+1)
+		pIdx = a.getCurrentDigits(lv+1)
 		return pIdx, None, a
 	else:
 		_, pathElem = movToLeftEnd(idx, a, lv)	
-		#decrement1MBI(a)
 		aStr = ''.join(a)
 		aaStr, _ = minusMBIStr(aStr, '1')
 		a = list(aaStr)
