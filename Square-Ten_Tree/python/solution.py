@@ -43,18 +43,18 @@ class MBI:
 
 
 	@classmethod
-	def minus(cls, xx, yy): # x - y (x >= y)
+	def minus(cls, x, y): # x - y (x >= y)
 
-		length = (max(len(xx), len(yy)) // cls.block_size + 1) * cls.block_size
+		length = (max(len(x), len(y)) // cls.block_size + 1) * cls.block_size
 
-		xx = '0' * (length - len(xx)) + xx
-		yy = '0' * (length - len(yy)) + yy
+		x = '0' * (length - len(x)) + x
+		y = '0' * (length - len(y)) + y
 
 		result = ""
 		carry = 0
 		for i in range(length, 0, -cls.block_size):
-			tmpX = int(xx[i - cls.block_size:i])
-			tmpY = int(yy[i - cls.block_size:i])
+			tmpX = int(x[i - cls.block_size:i])
+			tmpY = int(y[i - cls.block_size:i])
 			delta = tmpX - tmpY - carry
 			if delta < 0:
 				delta += cls.block_val
@@ -88,40 +88,6 @@ class MBI:
 		if delta  == '0':
 			return 0
 		return 1
-		
-	@classmethod
-	def equals(cls, x, y):
-		lenX = len(x)
-		lenY = len(y)
-		if lenX != lenY:
-			return False
-
-		if x == y:
-			return True
-
-		delta, carry = cls.minus(x, y)
-		if carry:
-			return False
-		return delta == '0'
-
-	# Check x > y or not
-	@classmethod
-	def larger(cls, x, y):
-		lenX = len(x)
-		lenY = len(y)
-
-		if lenX > lenY:
-			return True
-		if lenX < lenY:
-			return False
-
-		if x == y:
-			return False
-
-		delta, carry = cls.minus(x, y)
-		if carry:
-			return False
-		return delta != '0'
 
 	@classmethod
 	def getInterval(cls, lv):
@@ -246,26 +212,26 @@ def moveToLeftEnd(idx, lv):
 	pathElem = (lv, numOfNodes)
 	return leftEnd, pathElem
 
-def moveToNextParentNode(idx, a, lv):
+def moveToNextParentNode(idx, x, lv):
 	if atLeftEnd(idx, lv):
 		return None
-	else:
-		_, pathElem = moveToRightEnd(idx, lv)	
-		a.add('1')
-		return pathElem
 
-def moveToPrevParentNode(idx, a, lv):
+	_, pathElem = moveToRightEnd(idx, lv)	
+	x.add('1')
+	return pathElem
+
+def moveToPrevParentNode(idx, x, lv):
 	if atRightEnd(idx, lv):
 		return None
-	else:
-		_, pathElem = moveToLeftEnd(idx, lv)	
-		a.subtract('1')
-		return pathElem
+	
+	_, pathElem = moveToLeftEnd(idx, lv)	
+	x.subtract('1')
+	return pathElem
 
 
 
-#l = '800003083030000000000000050500090000000000000000000078000001000000100000180150002050000000000000' 
-#r = '523830000000480000000090020070900300098000000000003000002000000190007000000000004200400020000000008'
-l = input()
-r = input()
+l = '800003083030000000000000050500090000000000000000000078000001000000100000180150002050000000000000' 
+r = '523830000000480000000090020070900300098000000000003000002000000190007000000000004200400020000000008'
+#l = input()
+#r = input()
 solution(l, r)
