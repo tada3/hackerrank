@@ -1,3 +1,4 @@
+# My Big Int class
 class MBI:
 	block_size = 200
 	block_val = 10 ** block_size
@@ -10,8 +11,7 @@ class MBI:
 		for i in range(len(x)):
 			if x[i] == '0':
 				continue
-			else:
-				return x[i:]
+			return x[i:]
 		return '0'
 
 	@classmethod
@@ -155,7 +155,8 @@ def shortestPath(l, r):
 			numOfNodes = MBI.plus(delta, '1')
 			leftPath.append((lv, numOfNodes))
 			break
-		elif cmp > 0:
+		
+		if cmp > 0:
 			# x > y
 			break
 
