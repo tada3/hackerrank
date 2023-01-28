@@ -4,7 +4,6 @@ class MBI:
 	
 	def __init__(self, v):
 		self.val = v
-		self.pos = 0
 
 	@staticmethod
 	def trimZero(x):
@@ -169,6 +168,20 @@ def shortestPath(l, r):
 		lv += 1
 
 	return mergePath(leftPath, rightPath)
+
+def moveToNextParentNode(idx, x, lv):
+	if atLeftEnd(idx, lv):
+		return None
+	_, pathElem = moveToRightEnd(idx, lv)	
+	x.add('1')
+	return pathElem
+
+def moveToPrevParentNode(idx, x, lv):
+	if atRightEnd(idx, lv):
+		return None
+	_, pathElem = moveToLeftEnd(idx, lv)	
+	x.subtract('1')
+	return pathElem
 	
 def mergePath(lp, rp):
 	if len(rp) == 0:
@@ -195,13 +208,6 @@ def rightEndIdx(lv):
 	width = MBI.getInterval(lv)
 	return '9' * width
 
-def moveToRightEnd(idx, lv):
-	reIdx = rightEndIdx(lv)
-	delta, _ = MBI.minus(reIdx, idx)
-	numOfNodes = MBI.plus(delta, '1')
-	pathElem = (lv, numOfNodes)	
-	return reIdx, pathElem
-
 def moveToLeftEnd(idx, lv):
 	leftEnd = leftEndIdx(lv)
 	delta, _ = MBI.minus(idx, leftEnd)
@@ -209,26 +215,15 @@ def moveToLeftEnd(idx, lv):
 	pathElem = (lv, numOfNodes)
 	return leftEnd, pathElem
 
-def moveToNextParentNode(idx, x, lv):
-	if atLeftEnd(idx, lv):
-		return None
-
-	_, pathElem = moveToRightEnd(idx, lv)	
-	x.add('1')
-	return pathElem
-
-def moveToPrevParentNode(idx, x, lv):
-	if atRightEnd(idx, lv):
-		return None
-	
-	_, pathElem = moveToLeftEnd(idx, lv)	
-	x.subtract('1')
-	return pathElem
+def moveToRightEnd(idx, lv):
+	reIdx = rightEndIdx(lv)
+	delta, _ = MBI.minus(reIdx, idx)
+	numOfNodes = MBI.plus(delta, '1')
+	pathElem = (lv, numOfNodes)	
+	return reIdx, pathElem
 
 
 
-l = '800003083030000000000000050500090000000000000000000078000001000000100000180150002050000000000000' 
-r = '523830000000480000000090020070900300098000000000003000002000000190007000000000004200400020000000008'
-#l = input()
-#r = input()
+l = input()
+r = input()
 solution(l, r)
