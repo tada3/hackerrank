@@ -1,5 +1,5 @@
 class MBI:
-	block_size = 300
+	block_size = 200
 	block_val = 10 ** block_size
 	
 	def __init__(self, v):
@@ -67,6 +67,28 @@ class MBI:
 		result = cls.trimZero(result)
 		return result, carry > 0
 
+
+	@classmethod
+	def compare(cls, x, y):
+		x = cls.trimZero(x)
+		y = cls.trimZero(y)
+		lenX = len(x)
+		lenY = len(y)
+		if lenX > lenY:
+			return 1
+		if lenX < lenY:
+			return -1
+
+		if x == y:
+			return 0
+
+		delta, carry = cls.minus(x, y)
+		if carry:
+			return -1
+		if delta  == '0':
+			return 0
+		return 1
+		
 	@classmethod
 	def equals(cls, x, y):
 		lenX = len(x)
@@ -106,10 +128,6 @@ class MBI:
 		if lv == 0:
 			return 1
 		return 2**(lv-1)
-
-	@classmethod
-	def getWidth(cls, lv):
-		return 2**lv
 
 	def len(self):
 		return len(self.val)
@@ -162,9 +180,10 @@ def shortestPath(l, r):
 #		print(f'{lv}: {xCurrentIdx}, {yCurrentIdx}')
 #		print(f'{lv}: {x.val}, {y.val}')
 
-		if MBI.equals(x.val, y.val):
+		cmp = MBI.compare(x.val, y.val)
+		if cmp == 0:
 			# In the same parent node
-			if MBI.larger(xCurrentIdx, yCurrentIdx):
+			if MBI.compare(xCurrentIdx, yCurrentIdx) > 0:
 				# Do not need to count nodes in this level
 				break
 			if atLeftEnd(xCurrentIdx, lv) and atRightEnd(yCurrentIdx, lv):
@@ -174,7 +193,7 @@ def shortestPath(l, r):
 			numOfNodes = MBI.plus(delta, '1')
 			leftPath.append((lv, numOfNodes))
 			break
-		elif MBI.larger(x.val, y.val):
+		elif cmp > 0:
 			# x > y
 			break
 
@@ -200,10 +219,10 @@ def mergePath(lp, rp):
 	return lp
 
 def atLeftEnd(idx, lv):
-	return MBI.equals(idx, leftEndIdx(lv))
+	return MBI.compare(idx, leftEndIdx(lv)) == 0
 
 def atRightEnd(idx, lv):
-	return MBI.equals(idx, rightEndIdx(lv))
+	return MBI.compare(idx, rightEndIdx(lv)) == 0
 
 def leftEndIdx(lv):
 	width = MBI.getInterval(lv)
@@ -244,8 +263,9 @@ def moveToPrevParentNode(idx, a, lv):
 		return pathElem
 
 
-#l = input()
-#r = input()
-l = '800003083030000000000000050500090000000000000000000078000001000000100000180150002050000000000000' 
-r = '523830000000480000000090020070900300098000000000003000002000000190007000000000004200400020000000008'
+
+#l = '800003083030000000000000050500090000000000000000000078000001000000100000180150002050000000000000' 
+#r = '523830000000480000000090020070900300098000000000003000002000000190007000000000004200400020000000008'
+l = input()
+r = input()
 solution(l, r)
