@@ -59,7 +59,7 @@ class Big:
         size = self.size
         size2 = self.size2
         length = (max(len(value1), len(value2)) // size + 1) * size
-        print(f'XXX minus {value1}, {len(value1)}, {length}')
+       # print(f'XXX minus {value1}, {len(value1)}, {length}')
 
         value1 = '0' * (length - len(value1)) + value1
         value2 = '0' * (length - len(value2)) + value2
@@ -146,8 +146,8 @@ def solution(l, r):
 #    main(input(), input())
 
 
-l = "22"
-r = "25"
+#l = "22"
+#r = "25"
 
 # This gets the following result
 # 3
@@ -155,5 +155,7 @@ r = "25"
 # 1 99999999999999999999999999999999999999999999999999
 # 0 5
 
+l = input()
+r = input()
 print(f'input: {l}, {r}')
 solution(l, r)

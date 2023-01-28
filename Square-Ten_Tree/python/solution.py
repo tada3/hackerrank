@@ -18,6 +18,7 @@ class MBI:
 
 	@classmethod
 	def plus(cls, x, y):
+		print('YYY plus', x, y)
 		length = (max(len(x), len(y)) // cls.block_size + 1) * cls.block_size
 
 		x = '0' * (length - len(x)) + x
@@ -26,11 +27,12 @@ class MBI:
 		result = ""
 		carry = 0
 		for i in range(length, 0, -cls.block_size):
+			print('YYY i=', i, carry)
 			tmpX = int(x[i - cls.block_size:i])
 			tmpY = int(y[i - cls.block_size:i])
 			sum = tmpX + tmpY + carry
-			delta = tmpX - tmpY - carry
-			if sum > cls.block_val:
+			print('YYY sum=', sum)
+			if sum >= cls.block_val:
 				carry = 1
 				sum -= cls.block_val
 			else:
@@ -167,6 +169,9 @@ def shortestPath(l, r):
 		yCurrentIdx = y.getCurrentDigits(lv)
 		y.moveToUpper(lv)
 
+		print(f'{lv}: {xCurrentIdx}, {yCurrentIdx}')
+		print(f'{lv}: {x.val}, {y.val}')
+
 		if MBI.equals(x.val, y.val):
 			# In the same parent node
 			if MBI.larger(xCurrentIdx, yCurrentIdx):
@@ -239,6 +244,7 @@ def moveToNextParentNode(idx, a, lv):
 		_, pathElem = moveToRightEnd(idx, lv)	
 		one = '1' + '0' * MBI.getWidth(lv)
 		a.add(one)
+		print('XXX added', a.val)
 		return pathElem
 
 def moveToPrevParentNode(idx, a, lv):
@@ -251,44 +257,24 @@ def moveToPrevParentNode(idx, a, lv):
 		return pathElem
 
 
-
-# Case 0: sample
-l = "1"
-r = "10"
-
-# Case 1: same node
-#l = "2"
-#r = "4"
-
-# Case 2: next node
-#l = "2"
-#r = "13"
-
-# Case 3: next node AND parent is also next node
-#l = "95"
-#r = "106"
-
-# Case 4-1: different nodes
-#l = "3"
-#r = "100"
-
-# Case 4-2: different nodes
-#l = "1"
-#r = "95"
-
-# Case 4-3: different nodes
-#l = "2"
-#r = "95"
-
-# Case 4-4: different nodes
-#l = "1"
-#r = "100"
-
-#l = "12345667"
-#r = "2343526222"
-#print(f'input: {l}, {r}')
-
-l = input()
-r = input()
+#l = input()
+#r = input()
+l = '800003083030000000000000050500090000000000000000000078000001000000100000180150002050000000000000'
+r = '523830000000480000000090020070900300098000000000003000002000000190007000000000004200400020000000008'
 solution(l, r)
 
+
+# Test Case 20
+# 800003083030000000000000050500090000000000000000000078000001000000100000180150002050000000000000
+# 523830000000480000000090020070900300098000000000003000002000000190007000000000004200400020000000008
+
+#9
+#0 1
+#4 79500000
+#5 9989999981984999
+#6 99999999999999999999219999989999
+#7 52302999691745000000009002002040020
+#6 980000000000030000020000001900
+#5 700000000000420
+#4 4000200
+#0 8
