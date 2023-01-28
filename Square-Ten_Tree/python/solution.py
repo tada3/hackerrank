@@ -107,18 +107,17 @@ class MBI:
 		y, _ = self.minus(self.val, x)
 		self.val = y
 
-	def getCurrentDigits(self, lv):
+	def popCurrentDigits(self, lv):
+		cd = ''
 		width = self.getInterval(lv)
-		start = self.len() - width
-		if start < 0:
-			return '0' * (width - self.len()) + self.val
-		return self.val[start:]
+		if width > self.len():
+			cd = '0' * (width - self.len()) + self.val
+		else:
+			cd = self.val[-width:]
+		self.val = self.val[:-width]
+		return cd
 
-	def moveToUpper(self, lv):
-		removed = self.getInterval(lv)
-		self.val = self.val[:-removed]
 
-	
 
 def solution(l, r):
 	path = shortestPath(l, r)
@@ -138,10 +137,8 @@ def shortestPath(l, r):
 	rightPath = []
 	lv = 0
 	while True:
-		xCurrentIdx = x.getCurrentDigits(lv)
-		x.moveToUpper(lv)
-		yCurrentIdx = y.getCurrentDigits(lv)
-		y.moveToUpper(lv)
+		xCurrentIdx = x.popCurrentDigits(lv)
+		yCurrentIdx = y.popCurrentDigits(lv)
 
 #		print(f'{lv}: {xCurrentIdx}, {yCurrentIdx}')
 #		print(f'{lv}: {x.val}, {y.val}')
