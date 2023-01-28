@@ -1,4 +1,3 @@
-
 class MBI:
 	block_size = 10
 	block_val = 10 ** block_size
@@ -18,7 +17,6 @@ class MBI:
 
 	@classmethod
 	def plus(cls, x, y):
-		print('YYY plus', x, y)
 		length = (max(len(x), len(y)) // cls.block_size + 1) * cls.block_size
 
 		x = '0' * (length - len(x)) + x
@@ -27,11 +25,9 @@ class MBI:
 		result = ""
 		carry = 0
 		for i in range(length, 0, -cls.block_size):
-			print('YYY i=', i, carry)
 			tmpX = int(x[i - cls.block_size:i])
 			tmpY = int(y[i - cls.block_size:i])
 			sum = tmpX + tmpY + carry
-			print('YYY sum=', sum)
 			if sum >= cls.block_val:
 				carry = 1
 				sum -= cls.block_val
@@ -169,8 +165,8 @@ def shortestPath(l, r):
 		yCurrentIdx = y.getCurrentDigits(lv)
 		y.moveToUpper(lv)
 
-		print(f'{lv}: {xCurrentIdx}, {yCurrentIdx}')
-		print(f'{lv}: {x.val}, {y.val}')
+#		print(f'{lv}: {xCurrentIdx}, {yCurrentIdx}')
+#		print(f'{lv}: {x.val}, {y.val}')
 
 		if MBI.equals(x.val, y.val):
 			# In the same parent node
@@ -244,7 +240,6 @@ def moveToNextParentNode(idx, a, lv):
 		_, pathElem = moveToRightEnd(idx, lv)	
 		one = '1' + '0' * MBI.getWidth(lv)
 		a.add(one)
-		print('XXX added', a.val)
 		return pathElem
 
 def moveToPrevParentNode(idx, a, lv):
@@ -257,24 +252,6 @@ def moveToPrevParentNode(idx, a, lv):
 		return pathElem
 
 
-#l = input()
-#r = input()
-l = '800003083030000000000000050500090000000000000000000078000001000000100000180150002050000000000000'
-r = '523830000000480000000090020070900300098000000000003000002000000190007000000000004200400020000000008'
+l = input()
+r = input()
 solution(l, r)
-
-
-# Test Case 20
-# 800003083030000000000000050500090000000000000000000078000001000000100000180150002050000000000000
-# 523830000000480000000090020070900300098000000000003000002000000190007000000000004200400020000000008
-
-#9
-#0 1
-#4 79500000
-#5 9989999981984999
-#6 99999999999999999999219999989999
-#7 52302999691745000000009002002040020
-#6 980000000000030000020000001900
-#5 700000000000420
-#4 4000200
-#0 8
