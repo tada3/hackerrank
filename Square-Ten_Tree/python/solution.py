@@ -130,19 +130,6 @@ class MBI:
 			return '0' * (width - self.len()) + self.val
 		return self.val[start:]
 
-	def getCurrentDigitsXXX(self, lv):
-		width = self.getWidth(lv)
-		prevWidth = self.getWidth(lv - 1) if lv >= 1 else 0
-		len = width - prevWidth
-
-		end = self.len() - prevWidth
-		if end < 0:
-			return '0' * len
-		start = self.len() - width
-		if start < 0:
-			return '0' * (len - end) + self.val[:end]
-		return self.val[start:end]
-
 	def moveToUpper(self, lv):
 		removed = self.getInterval(lv)
 		self.val = self.val[:-removed]
@@ -218,13 +205,13 @@ def atLeftEnd(idx, lv):
 def atRightEnd(idx, lv):
 	return MBI.equals(idx, rightEndIdx(lv))
 
-def rightEndIdx(lv):
-	width = MBI.getInterval(lv)
-	return '9' * width
-
 def leftEndIdx(lv):
 	width = MBI.getInterval(lv)
 	return '0' * width
+
+def rightEndIdx(lv):
+	width = MBI.getInterval(lv)
+	return '9' * width
 
 def moveToRightEnd(idx, lv):
 	reIdx = rightEndIdx(lv)
@@ -245,8 +232,7 @@ def moveToNextParentNode(idx, a, lv):
 		return None
 	else:
 		_, pathElem = moveToRightEnd(idx, lv)	
-		one = '1' + '0' * MBI.getInterval(lv)
-		a.add(one)
+		a.add('1')
 		return pathElem
 
 def moveToPrevParentNode(idx, a, lv):
@@ -254,11 +240,12 @@ def moveToPrevParentNode(idx, a, lv):
 		return None
 	else:
 		_, pathElem = moveToLeftEnd(idx, lv)	
-		one = '1' + '0' * MBI.getInterval(lv)
-		a.subtract(one)
+		a.subtract('1')
 		return pathElem
 
 
-l = input()
-r = input()
+#l = input()
+#r = input()
+l = '800003083030000000000000050500090000000000000000000078000001000000100000180150002050000000000000' 
+r = '523830000000480000000090020070900300098000000000003000002000000190007000000000004200400020000000008'
 solution(l, r)
