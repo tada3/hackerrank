@@ -1,5 +1,5 @@
 class MBI:
-	block_size = 10
+	block_size = 300
 	block_val = 10 ** block_size
 	
 	def __init__(self, v):
