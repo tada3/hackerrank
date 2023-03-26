@@ -37,6 +37,18 @@ def get_ancestor(n, logn, p):
 				anc[j+1][i] = anc[j][anc[j][i]]
 	return anc    
 
+def process_queries(k, queries, depth, ancestor):
+	result = 0
+	for i in range(k-1):
+		for j in range(i+1, k):
+			u = queries[i]
+			v = queries[j]
+			dist = get_dist(depth, ancestor, u, v)
+			delta = (u+1) * (v+1) % MOD
+			delta = delta * dist % MOD
+			result = (result + delta) % MOD
+	return result
+
 def get_lca(u, v, depth, anc):
 	uu = u
 	vv = v
@@ -113,15 +125,7 @@ def solution():
 	for _ in range(q):
 		k = int(input())
 		queries = [ int(x)-1 for x in input().split() ]
-		result = 0
-		for i in range(k-1):
-			for j in range(i+1, k):
-				u = queries[i]
-				v = queries[j]
-				dist = get_dist(depth, ancestor, u, v)
-				delta = (u+1) * (v+1) % MOD
-				delta = delta * dist % MOD
-				result = (result + delta) % MOD
+		result = process_queries(k, queries, depth, ancestor)
 		print(result)
 	
 solution()
