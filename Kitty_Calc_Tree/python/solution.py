@@ -4,6 +4,7 @@ from collections import deque
 MOD = 10**9 + 7
 	
 def get_depth(n, c, root):
+	max_depth = 0
 	depth = [0] * n
 	# Breadth-first
 	queue = deque()
@@ -16,10 +17,12 @@ def get_depth(n, c, root):
 		if not c[x]:
 			continue
 		d = depth[x] + 1
+		if d > max_depth:
+			max_depth = d
 		for i in c[x]:
 			depth[i] = d
 			queue.append(i)
-	return depth
+	return depth, max_depth
 
 def get_ancestor(n, logn, p):
 	anc = [ [0] * n for _ in range(logn+1)]
@@ -38,13 +41,14 @@ def get_lca(logn, u, v, depth, anc):
 	uu = u
 	vv = v
 	# Move the lower to the same level with the other
-	if depth[uu] < depth[vv]:
-		uu, vv = vv, uu
+	if depth[uu] != depth[vv]:
+		if depth[uu] < depth[vv]:
+			uu, vv = vv, uu
 
-	for j in range(logn, -1, -1):
-		diff = depth[uu] - depth[vv]
-		if (diff >> j) > 0:
-			uu = anc[j][uu]
+		for j in range(logn, -1, -1):
+			diff = depth[uu] - depth[vv]
+			if (diff >> j) > 0:
+				uu = anc[j][uu]
 
 	# Get LCA
 	if uu == vv:
@@ -81,8 +85,6 @@ def solution():
 
 	for _ in range(n-2):
 		a, b = map(lambda x: int(x)-1, input().split())
-#		if len(children[a]) == 0:
-#			raise ValueError(f'{a} Does not exist')
 		if not tree[a] and not tree[b]:
 			raise ValueError(f'Both {a} and {b} are new nodes')
 		if not tree[a]:
@@ -96,8 +98,8 @@ def solution():
 			tree[a] = True
 			tree[b] = True
 
-	depth = get_depth(n, children, root)
-	logn = math.ceil(math.log2(n))
+	depth, max_depth = get_depth(n, children, root)
+	logn = math.ceil(math.log2(max_depth))
 	ancestor = get_ancestor(n, logn, parent)
 
 	for _ in range(q):
@@ -116,5 +118,4 @@ def solution():
 	
 solution()
 
-	    
-    
+	
