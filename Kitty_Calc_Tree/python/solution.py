@@ -1,11 +1,11 @@
 import math
 from collections import deque
 	
-def get_depth(n, c):
+def get_depth(n, c, root):
 	depth = [0] * n
 	# Breadth-first
 	queue = deque()
-	queue.append(0)
+	queue.append(root)
 	while True:
 		if not queue:
 			# Not found
@@ -66,26 +66,35 @@ def solution():
 	if n <= 1:
 		return
 
+	tree = [False] * n
 	children = [ [] for _ in range(n)]
 	parent = [-1] * n
 
 	a, b = map(lambda x: int(x)-1, input().split())
-	if a != 0:
-		raise ValueError('Not 1')
+	root = a
 	children[a].append(b)
 	parent[b] = a
+	tree[a] = True
+	tree[b] = True
 
 	for _ in range(n-2):
 		a, b = map(lambda x: int(x)-1, input().split())
 #		if len(children[a]) == 0:
 #			raise ValueError(f'{a} Does not exist')
-		if len(children[b]) != 0:
-			raise ValueError(f'{b} already exist')
+		if not tree[a] and not tree[b]:
+			raise ValueError(f'Both {a} and {b} are new nodes')
+		if not tree[a]:
+			children[b].append(a)
+			parent[a] = b
+			tree[a] = True
+			tree[b] = True
+		else:
+			children[a].append(b)
+			parent[b] = a
+			tree[a] = True
+			tree[b] = True
 
-		children[a].append(b)
-		parent[b] = a
-
-	depth = get_depth(n, children)
+	depth = get_depth(n, children, root)
 	logn = math.ceil(math.log2(n))
 	ancestor = get_ancestor(n, logn, parent)
 
