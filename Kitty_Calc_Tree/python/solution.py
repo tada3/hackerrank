@@ -1,5 +1,7 @@
 import math
 from collections import deque
+
+MOD = 10**9 + 7
 	
 def get_depth(n, c, root):
 	depth = [0] * n
@@ -107,7 +109,9 @@ def solution():
 				u = queries[i]
 				v = queries[j]
 				dist = get_dist(logn, depth, ancestor, u, v)
-				result += (u+1) * (v+1) * dist
+				delta = (u+1) * (v+1) % MOD
+				delta = delta * dist % MOD
+				result = (result + delta) % MOD
 		print(result)
 	
 solution()
