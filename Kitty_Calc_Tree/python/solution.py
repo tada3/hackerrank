@@ -37,7 +37,7 @@ def get_ancestor(n, logn, p):
 				anc[j+1][i] = anc[j][anc[j][i]]
 	return anc    
 
-def get_lca(logn, u, v, depth, anc):
+def get_lca(u, v, depth, anc):
 	uu = u
 	vv = v
 	# Move the lower to the same level with the other
@@ -45,27 +45,31 @@ def get_lca(logn, u, v, depth, anc):
 		if depth[uu] < depth[vv]:
 			uu, vv = vv, uu
 
-		for j in range(logn, -1, -1):
-			diff = depth[uu] - depth[vv]
+		diff = depth[uu] - depth[vv]
+		max_logn = log_ceil(diff)
+		for j in range(max_logn, -1, -1):
 			if (diff >> j) > 0:
 				uu = anc[j][uu]
-
+				diff = depth[uu] - depth[vv]
+			
 	# Get LCA
 	if uu == vv:
 		return uu
 
-	for j in range(logn, -1, -1):
+	max_logn = log_ceil(depth[uu])
+	for j in range(max_logn, -1, -1):
 		if anc[j][uu] != anc[j][vv]:
 			uu = anc[j][uu]
 			vv = anc[j][vv]
 
 	return anc[0][uu]	
 
-def get_dist(logn, depth, anc, u, v):
-	lca = get_lca(logn, u, v, depth, anc)
+def get_dist(depth, anc, u, v):
+	lca = get_lca(u, v, depth, anc)
 	return depth[u] + depth[v] - 2 * depth[lca]
 
-
+def log_ceil(x):
+	return math.ceil(math.log2(x))
 
 def solution():
 	n, q = map(int, input().split())
@@ -99,8 +103,12 @@ def solution():
 			tree[b] = True
 
 	depth, max_depth = get_depth(n, children, root)
-	logn = math.ceil(math.log2(max_depth))
+	logn = log_ceil(max_depth)
 	ancestor = get_ancestor(n, logn, parent)
+
+	del tree
+	del children
+	del parent
 
 	for _ in range(q):
 		k = int(input())
@@ -110,7 +118,7 @@ def solution():
 			for j in range(i+1, k):
 				u = queries[i]
 				v = queries[j]
-				dist = get_dist(logn, depth, ancestor, u, v)
+				dist = get_dist(depth, ancestor, u, v)
 				delta = (u+1) * (v+1) % MOD
 				delta = delta * dist % MOD
 				result = (result + delta) % MOD
