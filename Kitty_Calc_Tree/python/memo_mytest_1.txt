@@ -1,0 +1,82 @@
+process_queries(): 988
+process_queries2(): 1002
+
+なんで結果ちがうのか？
+
+12 1
+2 1
+3 1
+4 3
+5 4
+6 5
+7 1
+8 2
+9 4
+1 10
+10 11
+8 12
+5
+10 4 2 8 7
+
+            1
+          /   \  
+         0      7 
+      /  \  \    \  
+      2   6  9     11
+     /        \
+    3          10
+   /  \
+  4   8
+ /
+5
+
+process_queries()のログ
+get_dist 9 3 0 3
+process_queries 9 3 120
+get_dist 9 1 1 2
+process_queries 9 1       
+get_dist 9 7 1 3
+process_queries 9 7 240
+get_dist 9 6 0 2
+process_queries 9 6 140
+get_dist 3 1 1 3
+process_queries 3 1 24
+get_dist 3 7 1 4
+process_queries 3 7 128
+get_dist 3 6 0 3
+process_queries 3 6 84
+get_dist 1 7 1 1
+process_queries 1 7 16
+get_dist 1 6 1 2
+process_queries 1 6 28
+get_dist 7 6 1 3
+process_queries 7 6 168
+988
+
+
+
+process_queries2()のログ
+get_dist2 9 3 0 3
+process_queries2 9 3 120   OK
+get_dist_with_lca 1 9 1 2
+add_ext 2 1 54
+get_dist_with_lca 1 3 1 3
+add_ext 3 1 24
+get_dist 7 9 1 3
+add_ext 7 9 240
+get_dist 7 3 1 4
+add_ext 7 3 128
+get_dist 7 1 1 1
+add_ext 7 1 16
+get_dist 6 9 0 2
+add_ext 6 9 140
+get_dist 6 3 0 3
+add_ext 6 3 84
+get_dist 6 1 1 2
+add_ext 6 1 28
+get_dist 6 7 1 3
+add_ext 6 7 168
+1002
+
+add_exp()の引数の順番がおかしかった。
+
