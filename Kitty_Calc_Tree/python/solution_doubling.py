@@ -13,7 +13,7 @@ def get_depth(n, c, root):
 		if not queue:
 			# Not found
 			break
-		x = queue.pop()
+		x = queue.popleft()
 		if not c[x]:
 			continue
 		d = depth[x] + 1
