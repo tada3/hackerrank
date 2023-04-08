@@ -37,14 +37,14 @@ def get_ancestor(n, logn, p):
 				anc[j+1][i] = anc[j][anc[j][i]]
 	return anc    
 
-def get_delta2(q, processed, lca, depth, anc):
+def get_delta(q, processed, lca, depth, anc):
 	res = 0
 	lca1 = get_lca(lca, q, depth, anc)
 	#print('get_delta2 lca1, lca', lca1, lca)
 	if lca1 == lca:
 		# q is inside of the subtree of the prcessed nodes.
 		for p in processed:
-			dist = get_dist(depth, anc, q, p)
+			dist, _ = get_dist(depth, anc, q, p)
 			res = add_exp(res, q, p, dist)
 	else:
 		# q is outside of the subtree of the processed nodes.
@@ -86,11 +86,6 @@ def get_lca(u, v, depth, anc):
 
 def get_dist(depth, anc, u, v):
 	lca = get_lca(u, v, depth, anc)
-	#print('get_dist', u, v, lca, depth[u] + depth[v] - 2 * depth[lca])
-	return depth[u] + depth[v] - 2 * depth[lca]
-
-def get_dist2(depth, anc, u, v):
-	lca = get_lca(u, v, depth, anc)
 	#print('get_dist2', u, v, lca, depth[u] + depth[v] - 2 * depth[lca])
 	return depth[u] + depth[v] - 2 * depth[lca], lca
 
@@ -104,25 +99,24 @@ def add_exp(cur, a, b, dist):
 	#print('add_ext', a, b, delta)
 	return (cur + delta) % MOD
 
-
 def log_ceil(x):
 	return math.ceil(math.log2(x))
 
-def process_queries2(k, queries, depth, anc):
+def process_queries(k, queries, depth, anc):
 	result = 0
 	if k <= 1:
 		return result
 	
 	u = queries[0]
 	v = queries[1]
-	dist, lca = get_dist2(depth, anc, u, v)
+	dist, lca = get_dist(depth, anc, u, v)
 	result = (u+1) * (v+1) % MOD
 	result = result * dist % MOD
 	#print('process_queries2', u, v, result)
 	processed = [u, v]
 
 	for q in queries[2:]:
-		delta, lca = get_delta2(q, processed, lca, depth, anc)
+		delta, lca = get_delta(q, processed, lca, depth, anc)
 		result = (result + delta) % MOD
 		processed.append(q)
 	return result
@@ -173,7 +167,7 @@ def solution():
 	for _ in range(q):
 		k = int(input())
 		queries = [ int(x)-1 for x in input().split() ]
-		result = process_queries2(k, queries, depth, ancestor)
+		result = process_queries(k, queries, depth, ancestor)
 		print(result)
 	
 solution()
