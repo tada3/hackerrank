@@ -1,4 +1,7 @@
+import time
+import sys
 from collections import deque
+import itertools
 
 MOD = 10**9 + 7
 
@@ -38,13 +41,13 @@ class SparseTable:
 		# Make it half open interval.
 		y += 1
 		log_len = self.logs[y-x]
-		return self.min_a(self.st[log_len][x], self.st[log_len][y-(1<<log_len)])
-	
+		stll = self.st[log_len]
+		return self.min_a(stll[x], stll[y-(1<<log_len)])
+
+
+		
 	def min_a(self, x, y):
-		if self.a[x] < self.a[y]:
-			return x
-		else:
-			return y
+		return x if self.a[x] < self.a[y] else y
 	
 	@staticmethod
 	def build_logs(n):
@@ -61,6 +64,11 @@ def add_exp(cur, a, b, dist):
 	delta = delta * dist % MOD
 	#print('add_ext', a, b, delta)
 	return (cur + delta) % MOD
+
+
+def add_exp3(cur, a, b, dist):
+	#print('add_ext', a, b, delta)
+	return ((a+1)*(b+1)%MOD * dist % MOD + cur) % MOD
 
 def euler_tour(n, ch, root):
 	# Usually record node value, but we do not need it in this case.
@@ -107,12 +115,32 @@ def process_queries(k, q, st, depth, f_v):
 			v = q[j]
 			start = f_v[u]
 			end = f_v[v]
-			lca = st.query(start, end)
-			dist = get_dist(start, end, lca, depth)
+			#lca = st.query(start, end)
+			#dist = get_dist(start, end, lca, depth)
 
 			#print('process_queries', u, v, delta)
-			result = add_exp(result, u, v, dist)
+			#result = add_exp(result, u, v, dist)
+			#result = add_exp2(result, u, v, 4)
+			#result = add_exp3(result, u, v, 4)
+			result = ((u+1)*(v+1)%MOD * 4 % MOD + result) % MOD
+			#result = 123
 	return result
+
+def process_queries2(k, q, st, depth, f_v):
+	result = 0
+	for u, v in itertools.combinations(q, 2):
+		start = f_v[u]
+		end = f_v[v]
+		lca = st.query(start, end)
+		dist = depth[start] + depth[end] - 2 * depth[lca]
+		result = ((u+1)*(v+1)%MOD * dist % MOD + result) % MOD
+	return result
+
+
+
+def etime(t0):
+	t = (time.perf_counter_ns() - t0) / 1000000 
+	print(f'time: {t}')
 
 def solution():
 	n, q = map(int, input().split())
@@ -149,12 +177,14 @@ def solution():
 	st = SparseTable(et_d)
 	
 	# Process Queries with Sparse Table
+	t0 = time.perf_counter_ns()
 	for _ in range(q):
-		k = int(input())
-		queries = [ int(x)-1 for x in input().split() ]
-		
-		result = process_queries(k, queries, st, et_d, f_v)
+		k = int(sys.stdin.readline())
+		queries = [ int(x)-1 for x in sys.stdin.readline().split() ]
+		result = process_queries2(k, queries, st, et_d, f_v)
 		print(result)
+	etime(t0)
+
 
 solution()
 
