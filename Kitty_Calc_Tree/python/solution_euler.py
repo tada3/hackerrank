@@ -1,4 +1,4 @@
-import time
+#import time
 import sys
 from collections import deque
 import itertools
@@ -107,26 +107,7 @@ def euler_tour(n, ch, root):
 def get_dist(start, end, lca, depth):
 	return depth[start] + depth[end] - 2 * depth[lca]
 
-def process_queries(k, q, st, depth, f_v):
-	result = 0
-	for i in range(k-1):
-		for j in range(i+1, k):
-			u = q[i]
-			v = q[j]
-			start = f_v[u]
-			end = f_v[v]
-			#lca = st.query(start, end)
-			#dist = get_dist(start, end, lca, depth)
-
-			#print('process_queries', u, v, delta)
-			#result = add_exp(result, u, v, dist)
-			#result = add_exp2(result, u, v, 4)
-			#result = add_exp3(result, u, v, 4)
-			result = ((u+1)*(v+1)%MOD * 4 % MOD + result) % MOD
-			#result = 123
-	return result
-
-def process_queries2(k, q, st, depth, f_v):
+def process_queries(q, st, depth, f_v):
 	result = 0
 	for u, v in itertools.combinations(q, 2):
 		start = f_v[u]
@@ -143,14 +124,14 @@ def etime(t0):
 	print(f'time: {t}')
 
 def solution():
-	n, q = map(int, input().split())
+	n, q = map(int, sys.stdin.readline().split())
 	if n <= 1:
 		return
 
 	tree = [False] * n
 	children = [ [] for _ in range(n)]
 
-	a, b = map(lambda x: int(x)-1, input().split())
+	a, b = map(lambda x: int(x)-1, sys.stdin.readline().split())
 	root = a
 	#print('root', root)
 	children[a].append(b)
@@ -158,16 +139,14 @@ def solution():
 	tree[b] = True
 
 	for _ in range(n-2):
-		a, b = map(lambda x: int(x)-1, input().split())
-		if not tree[a] and not tree[b]:
-			raise ValueError(f'Both {a} and {b} are new nodes')
+		a, b = map(lambda x: int(x)-1, sys.stdin.readline().split())
+#		if not tree[a] and not tree[b]:
+#			raise ValueError(f'Both {a} and {b} are new nodes')
 		if not tree[a]:
 			children[b].append(a)
 			tree[a] = True
-			tree[b] = True
 		else:
 			children[a].append(b)
-			tree[a] = True
 			tree[b] = True
 
 	# Euler Tour
@@ -177,13 +156,14 @@ def solution():
 	st = SparseTable(et_d)
 	
 	# Process Queries with Sparse Table
-	t0 = time.perf_counter_ns()
+	#t0 = time.perf_counter_ns()
 	for _ in range(q):
-		k = int(sys.stdin.readline())
+		# k = int(sys.stdin.readline())
+		sys.stdin.readline() # k is not used
 		queries = [ int(x)-1 for x in sys.stdin.readline().split() ]
-		result = process_queries2(k, queries, st, et_d, f_v)
+		result = process_queries(queries, st, et_d, f_v)
 		print(result)
-	etime(t0)
+	#etime(t0)
 
 
 solution()
