@@ -27,8 +27,8 @@ def get_depth(n, ch, root):
 		i += 1
 	return depth, path
 
-def process_queries(q, path, qset, depth, children):
-	node_entries = {}
+def process_queries(n, q, path, qset, depth, children):
+	node_entries = [None] * n
 	S = [0] * q
 
 	for node in reversed(path):
@@ -38,7 +38,7 @@ def process_queries(q, path, qset, depth, children):
 
 		workplace = {}
 		for c in children[node]:
-			entry = node_entries.get(c)
+			entry = node_entries[c]
 			if not entry:
 				continue
 			
@@ -115,11 +115,9 @@ def solution():
 		for node in (int(x)-1 for x in sys.stdin.readline().split()):
 			qset[node].append(qset_id)
 
-	S = process_queries(Q, path, qset, depth, children)
+	S = process_queries(N, Q, path, qset, depth, children)
 
 	print(*S, sep='\n')
-
-
 
 
 
