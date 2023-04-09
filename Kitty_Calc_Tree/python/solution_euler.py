@@ -1,4 +1,4 @@
-#import time
+import time
 import sys
 from collections import deque
 import itertools
@@ -117,13 +117,32 @@ def process_queries(q, st, depth, f_v):
 		result = ((u+1)*(v+1)%MOD * dist % MOD + result) % MOD
 	return result
 
+def process_queries2(q, st, depth, f_v, cache):
+	result = 0
+	for u, v in itertools.combinations(q, 2):
+		start = f_v[u]
+		end = f_v[v]
+		lca = st.query(start, end)
+		dist = depth[start] + depth[end] - 2 * depth[lca]
+		val = cache[u].get(v)
+		if not val:
+			val = (u+1)*(v+1)%MOD * dist % MOD
+			cache[u][v] = val
+		else:
+			print('HIT!')
+		result = (result + val) % MOD
+	return result
+
 
 
 def etime(t0):
-	t = (time.perf_counter_ns() - t0) / 1000000 
-	print(f'time: {t}')
+	t1 = time.perf_counter_ns()
+	delta = (t1 - t0) / 1000000 
+	print(f'time: {delta}')
+	return t1
 
 def solution():
+	t0 = time.perf_counter_ns()
 	n, q = map(int, sys.stdin.readline().split())
 	if n <= 1:
 		return
@@ -149,21 +168,28 @@ def solution():
 			children[a].append(b)
 			tree[b] = True
 
+	t1 = etime(t0)
+
 	# Euler Tour
 	et_d, f_v = euler_tour(n, children, root)
 
+	t2 = etime(t1)
+
 	# Sparse Table for getting LCA
 	st = SparseTable(et_d)
+
+	t3 = etime(t2)
 	
 	# Process Queries with Sparse Table
 	#t0 = time.perf_counter_ns()
+	cache = [ {} for _ in range(n) ]
 	for _ in range(q):
 		# k = int(sys.stdin.readline())
 		sys.stdin.readline() # k is not used
 		queries = [ int(x)-1 for x in sys.stdin.readline().split() ]
-		result = process_queries(queries, st, et_d, f_v)
+		result = process_queries2(queries, st, et_d, f_v, cache)
 		print(result)
-	#etime(t0)
+	etime(t3)
 
 
 solution()
