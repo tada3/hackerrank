@@ -116,33 +116,6 @@ def euler_tour(n, ch, root):
 def get_dist(start, end, lca, depth):
 	return depth[start] + depth[end] - 2 * depth[lca]
 
-def process_queries(q, st, depth, f_v):
-	result = 0
-	for u, v in itertools.combinations(q, 2):
-		start = f_v[u]
-		end = f_v[v]
-		lca = st.query(start, end)
-		dist = depth[start] + depth[end] - 2 * depth[lca]
-		result = ((u+1)*(v+1)%MOD * dist % MOD + result) % MOD
-	return result
-
-def process_queries2(q, st, depth, f_v, cache):
-	result = 0
-	for u, v in itertools.combinations(q, 2):
-		start = f_v[u]
-		end = f_v[v]
-		lca = st.query(start, end)
-		dist = depth[start] + depth[end] - 2 * depth[lca]
-		val = cache[u].get(v)
-		if not val:
-			val = (u+1)*(v+1)%MOD * dist % MOD
-			cache[u][v] = val
-		else:
-			print('HIT!')
-		result = (result + val) % MOD
-	return result
-
-
 
 def etime(t0):
 	t1 = time.perf_counter_ns()
@@ -213,45 +186,44 @@ def solution():
 
 	print('QSET', qset)
 
-	xxx = {}
+	node_entries = {}
 	S = [0] * q
 	print('SSSS before', S, q)
 
 	for node in reversed(path):
 		print('    NODE', node)
 
-		
 
-		yyy = {}
+		node_entry = {}
 		for qset_id in qset[node]:
-			yyy[qset_id] = (depth[node], node+1, 0)
+			node_entry[qset_id] = (depth[node], node+1, 0)
 
-		zzz = {}
+		workplace = {}
 		for c in children[node]:
 			print('        children loop', c)
-			entry = xxx.get(c)
+			entry = node_entries.get(c)
 			if not entry:
 				continue
 			
 			print('        entry', entry)
 			for qset_id, node_info in entry.items():
 				print('            aaa.items loop', qset_id, node_info)
-				if qset_id in zzz:
-					zzz[qset_id].append(node_info)
+				if qset_id in workplace:
+					workplace[qset_id].append(node_info)
 				else:
-					zzz[qset_id] = [node_info]
+					workplace[qset_id] = [node_info]
 
-		for qset_id, entries in zzz.items():
+		for qset_id, entries in workplace.items():
 			# assume len(entries) >= 1
 			print('        zzz loop', qset_id, entries)
 		
-			if qset_id in yyy:
-				entries.append(yyy.pop(qset_id))
+			if qset_id in node_entry:
+				entries.append(node_entry.pop(qset_id))
 
 			
 			if len(entries) == 1:
 				# carry over to the parent node
-				yyy[qset_id] = entries[0]
+				node_entry[qset_id] = entries[0]
 				continue
 
 			v_total = 0
@@ -273,22 +245,19 @@ def solution():
 			print('        222', s_delta_total)
 
 			S[qset_id] = add(S[qset_id], s_delta_total)
-			yyy[qset_id] = (depth[node], v_total, t_total)
+			node_entry[qset_id] = (depth[node], v_total, t_total)
 
 
 		
 		
 
-		print('ZZZZ', zzz)
+		print('ZZZZ', workplace)
 
-		xxx[node] = yyy
+		node_entries[node] = node_entry
 
-	print('XXX', xxx)
+	print('XXX', node_entries)
 
-	print('SSSS', S)
-
-
-
+	print(*S, sep='\n')
 
 
 
