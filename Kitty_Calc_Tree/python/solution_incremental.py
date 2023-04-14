@@ -1,5 +1,5 @@
 import sys
-from collections import deque
+from collections import deque, defaultdict
 
 MOD = 10**9 + 7
 
@@ -27,16 +27,13 @@ def get_depth(n, ch, root):
 		i += 1
 	return depth, path
 
-def process_queries(n, q, path, qset, depth, children):
-	node_entries = [None] * n
+def process_queries(q, path, qset, depth, children):
+	node_entries = {}
 	S = [0] * q
 
 	for node in reversed(path):
-		node_entry = {}
-		for qset_id in qset[node]:
-			node_entry[qset_id] = (depth[node], node+1, 0)
-
 		workplace = {}
+		# collect entries in child nodes
 		for c in children[node]:
 			entry = node_entries[c]
 			if not entry:
@@ -47,17 +44,27 @@ def process_queries(n, q, path, qset, depth, children):
 					workplace[qset_id].append(node_info)
 				else:
 					workplace[qset_id] = [node_info]
+			node_entries[c] = None
 
+		if len(workplace) == 0:
+			# No entries in child nodes
+			node_entries[node] ={qset_id: (depth[node], node+1, 0) for qset_id in qset[node]}
+			continue
+
+		processed = {}
+		for qset_id in qset[node]:
+			processed[qset_id] = (depth[node], node+1, 0)
+
+		
 		for qset_id, entries in workplace.items():
 			# assume len(entries) >= 1
-			if qset_id in node_entry:
-				entries.append(node_entry.pop(qset_id))
-
-			
-			if len(entries) == 1:
+			if len(entries) == 1 and qset_id not in processed:
 				# carry over to the parent node
-				node_entry[qset_id] = entries[0]
+				processed[qset_id] = entries[0]
 				continue
+
+			if qset_id in processed:
+				entries.append(processed[qset_id])
 
 			v_total = 0
 			t_total = 0
@@ -73,10 +80,60 @@ def process_queries(n, q, path, qset, depth, children):
 				s_delta_total = add(s_delta_total, s_delta_entry)
 
 			S[qset_id] = add(S[qset_id], s_delta_total)
-			node_entry[qset_id] = (depth[node], v_total, t_total)
+			processed[qset_id] = (depth[node], v_total, t_total)
 
-		node_entries[node] = node_entry
+		node_entries[node] = processed
 	return S
+
+def process_queries2(q, path, qset, depth, children):
+	node_entries = {}
+	S = [0] * q
+
+	for node in reversed(path):
+		states = [ node_entries[child] for child in children[node] ]
+		largest = { s: (depth[node], node+1, 0) for s in qset[node] }
+
+		if states:
+			max_index = max( range(len(states)), key=lambda x: len(states[x]))
+			if len(states[max_index]) > len(largest):
+				states[max_index], largest = largest, states[max_index]
+
+	
+		workplace = defaultdict(list)
+		for cur_state in states:
+			for qset_id, v in cur_state.items():
+				workplace[qset_id].append(v)
+
+
+		for qset_id, entries in workplace.items():
+			# assume len(entries) >= 1
+			if len(entries) == 1 and qset_id not in largest:
+				# carry over to the parent node
+				largest[qset_id] = entries[0]
+				continue
+
+			if qset_id in largest:
+				entries.append(largest.pop(qset_id))
+
+			v_total = 0
+			t_total = 0
+			for d, v, t in entries:
+				v_total = add(v_total, v)
+				t_entry = add(t, mul(d - depth[node], v))
+				t_total = add(t_total, t_entry)
+
+			s_delta_total = 0
+			for d, v, t in entries:
+				t_entry = add(t, mul(d - depth[node], v))
+				s_delta_entry = mul((t_total - t_entry), v)
+				s_delta_total = add(s_delta_total, s_delta_entry)
+
+			S[qset_id] = add(S[qset_id], s_delta_total)
+			largest[qset_id] = (depth[node], v_total, t_total)
+
+		node_entries[node] = largest
+	return S
+
 
 def solution():
 	N, Q = map(int, sys.stdin.readline().split())
@@ -115,7 +172,7 @@ def solution():
 		for node in (int(x)-1 for x in sys.stdin.readline().split()):
 			qset[node].append(qset_id)
 
-	S = process_queries(N, Q, path, qset, depth, children)
+	S = process_queries2(Q, path, qset, depth, children)
 
 	print(*S, sep='\n')
 
