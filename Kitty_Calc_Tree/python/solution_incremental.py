@@ -34,6 +34,7 @@ def build_tree(n):
 
 def get_depth(n, ch, root):
 	# Breadth-first traversal
+	# Result is the same for BFS and DFS. But BFS seems be a bit faster in this problem.
 	depth = [0] * n
 	path = [0] * n
 	queue = deque()
