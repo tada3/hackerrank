@@ -1,7 +1,11 @@
 import sys
 from collections import deque, defaultdict
+import simple_timer
 
 MOD = 10**9 + 7
+timer1 = simple_timer.Timer(False)
+timer2 = simple_timer.Timer(False)
+timer3 = simple_timer.Timer(False)
 
 def mul(x, y):
     return (x * y) % MOD
@@ -32,6 +36,8 @@ def process_queries(q, path, qset, depth, children):
 	S = [0] * q
 
 	for node in reversed(path):
+		
+		timer1.resume()
 		workplace = {}
 		# collect entries in child nodes
 		for c in children[node]:
@@ -46,16 +52,27 @@ def process_queries(q, path, qset, depth, children):
 					workplace[qset_id] = [node_info]
 			node_entries[c] = None
 
+		
+		timer1.pause()
+
+
+		timer2.resume()
+
 		if len(workplace) == 0:
 			# No entries in child nodes
 			node_entries[node] ={qset_id: (depth[node], node+1, 0) for qset_id in qset[node]}
 			continue
+		
+		timer2.pause()
+		
 
+		timer3.resume()
 		processed = {}
 		for qset_id in qset[node]:
 			processed[qset_id] = (depth[node], node+1, 0)
+		timer3.pause()
 
-		
+		#timer1.resume()
 		for qset_id, entries in workplace.items():
 			# assume len(entries) >= 1
 			if len(entries) == 1 and qset_id not in processed:
@@ -82,6 +99,7 @@ def process_queries(q, path, qset, depth, children):
 			S[qset_id] = add(S[qset_id], s_delta_total)
 			processed[qset_id] = (depth[node], v_total, t_total)
 
+		#timer1.pause()
 		node_entries[node] = processed
 	return S
 
@@ -172,11 +190,14 @@ def solution():
 		for node in (int(x)-1 for x in sys.stdin.readline().split()):
 			qset[node].append(qset_id)
 
-	S = process_queries2(Q, path, qset, depth, children)
+	S = process_queries(Q, path, qset, depth, children)
 
 	print(*S, sep='\n')
 
 
 
 solution()
+timer1.print()
+timer2.print()
+timer3.print()
 	

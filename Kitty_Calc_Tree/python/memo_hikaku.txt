@@ -1,0 +1,33 @@
+python % time python3 solution_incremental.py < testcase_17.txt > output.txt
+python3 solution_incremental.py < testcase_17.txt > output.txt  25.06s user 0.07s system 99% cpu 25.155 total
+
+time(ms): 61.05
+
+time(ms): 11,205.09
+
+time(ms): 23,656.77
+
+
+process_query()
+
+以下の部分で12秒
+workplace = {}
+		# collect entries in child nodes
+		for c in children[node]:
+			entry = node_entries[c]
+			if not entry:
+				continue
+			
+			for qset_id, node_info in entry.items():
+				if qset_id in workplace:
+					workplace[qset_id].append(node_info)
+				else:
+					workplace[qset_id] = [node_info]
+			node_entries[c] = None
+
+さらに以下の部分で11秒
+for qset_id, entries in workplace.items():
+	...
+
+
+
