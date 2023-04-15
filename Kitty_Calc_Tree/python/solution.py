@@ -64,6 +64,7 @@ def process_queries(q, path, qset, depth, children):
 
 		# collect entries in child nodes
 		for c in children[node]:
+			# child entry is never referenced later
 			entry = node_entries.pop(c)
 			if not entry:
 				continue
