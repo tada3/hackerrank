@@ -27,7 +27,7 @@ def get_depth(n, ch, root):
 		i += 1
 	return depth, path
 
-def process_queries4(q, path, qset, depth, children):
+def process_queries(q, path, qset, depth, children):
 	node_entries = {}
 	S = [0] * q
 
@@ -125,7 +125,7 @@ def solution():
 		for node in (int(x)-1 for x in sys.stdin.readline().split()):
 			qset[node].append(qset_id)
 
-	S = process_queries4(Q, path, qset, depth, children)
+	S = process_queries(Q, path, qset, depth, children)
 
 	print(*S, sep='\n')
 
