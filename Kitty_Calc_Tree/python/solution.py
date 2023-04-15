@@ -3,6 +3,10 @@ from collections import deque, defaultdict
 
 MOD = 10**9 + 7
 
+def read_line():
+	return sys.stdin.readline()
+
+
 def mul(x, y):
     return (x * y) % MOD
 
@@ -13,14 +17,14 @@ def build_tree(n):
 	tree = [False] * n
 	children = [ [] for _ in range(n)]
 
-	a, b = [ int(x)-1 for x in sys.stdin.readline().split() ]
+	a, b = [ int(x)-1 for x in read_line().split() ]
 	root = a
 	children[a].append(b)
 	tree[a] = True
 	tree[b] = True
 
 	for _ in range(n-2):
-		a, b = [ int(x)-1 for x in sys.stdin.readline().split() ]
+		a, b = [ int(x)-1 for x in read_line().split() ]
 #		if not tree[a] and not tree[b]:
 #			raise ValueError(f'Both {a} and {b} are new nodes')
 		if not tree[a]:
@@ -114,21 +118,25 @@ def process_queries(q, path, qset, depth, children):
 	return S
 
 def solution():
-	N, Q = map(int, sys.stdin.readline().split())
+	N, Q = map(int, read_line().split())
 	if N <= 1:
 		return
 	
+	# O(N)
 	children, root = build_tree(N)
 
+	# O(N)
 	depth, path = get_depth(N, children, root)
 
+	# O(Q * K)
 	qset = [ [] for _ in range(N) ]
 	for qset_id in range(Q):
-		# k = int(sys.stdin.readline())
-		sys.stdin.readline() # k is not used
-		for node in (int(x)-1 for x in sys.stdin.readline().split()):
+		# k = int(ead_line())
+		read_line() # k is not used
+		for node in (int(x)-1 for x in read_line().split()):
 			qset[node].append(qset_id)
 
+	# O(N * Q)
 	S = process_queries(Q, path, qset, depth, children)
 
 	print(*S, sep='\n')
