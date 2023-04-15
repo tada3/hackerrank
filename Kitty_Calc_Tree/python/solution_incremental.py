@@ -9,6 +9,29 @@ def mul(x, y):
 def add(x, y):
 	return (x + y) % MOD
 
+def build_tree(n):
+	tree = [False] * n
+	children = [ [] for _ in range(n)]
+
+	a, b = [ int(x)-1 for x in sys.stdin.readline().split() ]
+	root = a
+	children[a].append(b)
+	tree[a] = True
+	tree[b] = True
+
+	for _ in range(n-2):
+		a, b = [ int(x)-1 for x in sys.stdin.readline().split() ]
+#		if not tree[a] and not tree[b]:
+#			raise ValueError(f'Both {a} and {b} are new nodes')
+		if not tree[a]:
+			children[b].append(a)
+			tree[a] = True
+		else:
+			children[a].append(b)
+			tree[b] = True
+	
+	return children, root
+
 def get_depth(n, ch, root):
 	# Breadth-first traversal
 	depth = [0] * n
@@ -94,31 +117,11 @@ def solution():
 	if N <= 1:
 		return
 	
-	tree = [False] * N
-	children = [ [] for _ in range(N)]
-
-	a, b = map(lambda x: int(x)-1, sys.stdin.readline().split())
-	root = a
-	children[a].append(b)
-	tree[a] = True
-	tree[b] = True
-
-	for _ in range(N-2):
-		a, b = map(lambda x: int(x)-1, sys.stdin.readline().split())
-#		if not tree[a] and not tree[b]:
-#			raise ValueError(f'Both {a} and {b} are new nodes')
-		if not tree[a]:
-			children[b].append(a)
-			tree[a] = True
-		else:
-			children[a].append(b)
-			tree[b] = True
+	children, root = build_tree(N)
 
 	depth, path = get_depth(N, children, root)
 
-
 	qset = [ [] for x in range(N) ]
-
 	for qset_id in range(Q):
 		# k = int(sys.stdin.readline())
 		sys.stdin.readline() # k is not used
@@ -132,4 +135,3 @@ def solution():
 
 
 solution()
-	

@@ -42,3 +42,21 @@ defaultdict
 time(ms): 203.07
 time(ms): 41.98
 time(ms): 94.49
+
+
+
+comprehension
+time(ms): 208.54
+time(ms): 205.73
+time(ms): 210.13
+
+map
+time(ms): 224.75
+time(ms): 227.54
+time(ms): 222.22
+
+
+generator
+time(ms): 223.60
+time(ms): 243.28
+time(ms): 233.29
