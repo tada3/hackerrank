@@ -1,11 +1,7 @@
 import sys
 from collections import deque, defaultdict
-import simple_timer
 
 MOD = 10**9 + 7
-timer1 = simple_timer.Timer(False)
-timer2 = simple_timer.Timer(False)
-timer3 = simple_timer.Timer(False)
 
 def mul(x, y):
     return (x * y) % MOD
@@ -31,127 +27,67 @@ def get_depth(n, ch, root):
 		i += 1
 	return depth, path
 
-def process_queries(q, path, qset, depth, children):
+def process_queries4(q, path, qset, depth, children):
 	node_entries = {}
 	S = [0] * q
 
-	for node in reversed(path):
-		
-		timer1.resume()
-		workplace = {}
+	for node in reversed(path):	
+		workplace = defaultdict(list)
+		post_processed = {}
+
 		# collect entries in child nodes
 		for c in children[node]:
 			entry = node_entries[c]
 			if not entry:
 				continue
 			
-			for qset_id, node_info in entry.items():
-				if qset_id in workplace:
-					workplace[qset_id].append(node_info)
-				else:
-					workplace[qset_id] = [node_info]
+			tmp = entry
+			if len(entry) > len(post_processed):
+				tmp = post_processed
+				post_processed = entry
+
+			for qset_id, node_info in tmp.items():
+				workplace[qset_id].append(node_info)
 			node_entries[c] = None
 
-		
-		timer1.pause()
+		# add entry of the current node
+		pre_processed =  {qset_id: (depth[node], node+1, 0) for qset_id in qset[node]}
+		tmp = pre_processed
+		if len(pre_processed) > len(post_processed):
+			tmp = post_processed
+			post_processed = pre_processed
+		for qset_id, node_info in tmp.items():
+			workplace[qset_id].append(node_info)
 
-
-		timer2.resume()
-
-		if len(workplace) == 0:
-			# No entries in child nodes
-			node_entries[node] ={qset_id: (depth[node], node+1, 0) for qset_id in qset[node]}
-			continue
-		
-		timer2.pause()
-		
-
-		timer3.resume()
-		processed = {}
-		for qset_id in qset[node]:
-			processed[qset_id] = (depth[node], node+1, 0)
-		timer3.pause()
-
-		#timer1.resume()
-		for qset_id, entries in workplace.items():
+		# proess data in workplace
+		for qset_id, node_infos in workplace.items():
 			# assume len(entries) >= 1
-			if len(entries) == 1 and qset_id not in processed:
+			if len(node_infos) == 1 and qset_id not in post_processed:
 				# carry over to the parent node
-				processed[qset_id] = entries[0]
+				post_processed[qset_id] = node_infos[0]
 				continue
 
-			if qset_id in processed:
-				entries.append(processed[qset_id])
+			if qset_id in post_processed:
+				node_infos.append(post_processed[qset_id])
 
 			v_total = 0
 			t_total = 0
-			for d, v, t in entries:
+			for d, v, t in node_infos:
 				v_total = add(v_total, v)
 				t_entry = add(t, mul(d - depth[node], v))
 				t_total = add(t_total, t_entry)
 
 			s_delta_total = 0
-			for d, v, t in entries:
+			for d, v, t in node_infos:
 				t_entry = add(t, mul(d - depth[node], v))
 				s_delta_entry = mul((t_total - t_entry), v)
 				s_delta_total = add(s_delta_total, s_delta_entry)
 
 			S[qset_id] = add(S[qset_id], s_delta_total)
-			processed[qset_id] = (depth[node], v_total, t_total)
+			post_processed[qset_id] = (depth[node], v_total, t_total)
 
-		#timer1.pause()
-		node_entries[node] = processed
+		node_entries[node] = post_processed
 	return S
-
-def process_queries2(q, path, qset, depth, children):
-	node_entries = {}
-	S = [0] * q
-
-	for node in reversed(path):
-		states = [ node_entries[child] for child in children[node] ]
-		largest = { s: (depth[node], node+1, 0) for s in qset[node] }
-
-		if states:
-			max_index = max( range(len(states)), key=lambda x: len(states[x]))
-			if len(states[max_index]) > len(largest):
-				states[max_index], largest = largest, states[max_index]
-
-	
-		workplace = defaultdict(list)
-		for cur_state in states:
-			for qset_id, v in cur_state.items():
-				workplace[qset_id].append(v)
-
-
-		for qset_id, entries in workplace.items():
-			# assume len(entries) >= 1
-			if len(entries) == 1 and qset_id not in largest:
-				# carry over to the parent node
-				largest[qset_id] = entries[0]
-				continue
-
-			if qset_id in largest:
-				entries.append(largest.pop(qset_id))
-
-			v_total = 0
-			t_total = 0
-			for d, v, t in entries:
-				v_total = add(v_total, v)
-				t_entry = add(t, mul(d - depth[node], v))
-				t_total = add(t_total, t_entry)
-
-			s_delta_total = 0
-			for d, v, t in entries:
-				t_entry = add(t, mul(d - depth[node], v))
-				s_delta_entry = mul((t_total - t_entry), v)
-				s_delta_total = add(s_delta_total, s_delta_entry)
-
-			S[qset_id] = add(S[qset_id], s_delta_total)
-			largest[qset_id] = (depth[node], v_total, t_total)
-
-		node_entries[node] = largest
-	return S
-
 
 def solution():
 	N, Q = map(int, sys.stdin.readline().split())
@@ -163,7 +99,6 @@ def solution():
 
 	a, b = map(lambda x: int(x)-1, sys.stdin.readline().split())
 	root = a
-	#print('root', root)
 	children[a].append(b)
 	tree[a] = True
 	tree[b] = True
@@ -190,14 +125,11 @@ def solution():
 		for node in (int(x)-1 for x in sys.stdin.readline().split()):
 			qset[node].append(qset_id)
 
-	S = process_queries(Q, path, qset, depth, children)
+	S = process_queries4(Q, path, qset, depth, children)
 
 	print(*S, sep='\n')
 
 
 
 solution()
-timer1.print()
-timer2.print()
-timer3.print()
 	
