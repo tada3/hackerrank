@@ -122,7 +122,7 @@ def solution():
 
 	depth, path = get_depth(N, children, root)
 
-	qset = [ [] for x in range(N) ]
+	qset = [ [] for _ in range(N) ]
 	for qset_id in range(Q):
 		# k = int(sys.stdin.readline())
 		sys.stdin.readline() # k is not used
