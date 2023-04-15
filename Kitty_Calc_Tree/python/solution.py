@@ -6,7 +6,6 @@ MOD = 10**9 + 7
 def read_line():
 	return sys.stdin.readline()
 
-
 def mul(x, y):
     return (x * y) % MOD
 
@@ -65,7 +64,7 @@ def process_queries(q, path, qset, depth, children):
 
 		# collect entries in child nodes
 		for c in children[node]:
-			entry = node_entries[c]
+			entry = node_entries.pop(c)
 			if not entry:
 				continue
 			
@@ -76,7 +75,6 @@ def process_queries(q, path, qset, depth, children):
 
 			for qset_id, node_info in tmp.items():
 				workplace[qset_id].append(node_info)
-			node_entries[c] = None
 
 		# add entry of the current node
 		pre_processed =  {qset_id: (depth[node], node+1, 0) for qset_id in qset[node]}
@@ -116,6 +114,8 @@ def process_queries(q, path, qset, depth, children):
 
 		node_entries[node] = post_processed
 	return S
+
+
 
 def solution():
 	N, Q = map(int, read_line().split())
