@@ -89,6 +89,7 @@ $$ T' = \sum_{i=1}^{k} [u_i \cdot (d_i + e)] + z \cdot f $$
 $$ = T + \sum_i u_i \cdot e + z \cdot f $$
 
 Then,
+
 $$ S' = \sum_{i, j} u_i \cdot u_j \cdot dist(u_i, u_j) + \sum_i u_i \cdot z \cdot (d_i + e + f) $$
 
 $$ = S + \sum_i u_i \cdot z \cdot (d_i + e + f) $$
