@@ -22,9 +22,9 @@ If you solve this naively, there are $O(K^2)$ iterations. So, even if each query
 In the problem, $u$, $v$ are only subset of the tree contained in the query set. However, in the following discussion, we assume that all the nodes are contained in the query set.
 
 Let us start with a simple case of 2 nodes.
-$$
-    x\\
-a \quad /  \quad \backslash \quad b \\
+
+$$    x \\ $$
+$$a \quad /  \quad \backslash \quad b \\
 / \quad \quad \backslash \\
 u \quad \quad \quad v \\
 $$
@@ -33,7 +33,7 @@ We can decompose $u \cdot v \cdot dist(u, v)$ into the sum of each node's contri
 $$a = dist(u, x)$$
 $$b = dist(v, x)$$
 $$T = u \cdot a + v \cdot b$$
-$$S = u \cdot v \cdot dist(u, v) \\
+$$ S = u \cdot v \cdot dist(u, v) \\
 = u \cdot v \cdot (a + b) \\
 aaaa \quad \quad \quad \quad \quad \quad \quad = (T - u \cdot a) \cdot u + (T - v \cdot b) \cdot v
 $$
