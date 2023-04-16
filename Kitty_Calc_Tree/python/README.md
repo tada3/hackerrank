@@ -90,7 +90,7 @@ We get
 $$ 
 T' = (T_x + V_x \cdot e) + (T_z + V_z \cdot f) \\
 \Delta S = S' - S \\
-= [T' - (T_x + V_x \cdot e)] \cdot V_x + [(T' - (T_z + V_z \cdot f)]\ \cdot V_z 
+= [T' - (T_x + V_x \cdot e)] \cdot V_x + [T' - (T_z + V_z \cdot f)]\ \cdot V_z 
 $$
 
 From tihs we can guess the following:
