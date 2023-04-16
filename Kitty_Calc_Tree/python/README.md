@@ -48,7 +48,7 @@ $$ \quad \quad \quad \quad \quad \quad \quad = (T - u \cdot a) \cdot u + (T - v 
 
 Generalizing this, we get this for multiple nodes sharing the same LCA:
 
-$$ x \quad \_\_\_\_\_\_ $$
+$$ x \quad --- $$
 
 $$ d_1 / \quad \backslash d_2 \quad ... \quad \backslash d_k $$
 
