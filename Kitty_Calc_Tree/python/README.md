@@ -66,7 +66,7 @@ $$ = \sum_{i, j} u_i \cdot u_j \cdot (d_i + d_j) $$
 
 $$ = \sum_{i=1}^{k} (T - u_i \cdot d_i) \cdot u_i $$
 
-This takes only $2k$ iterations. ($k$ to get $T$, and another $k$ to get the final result.) But what happes when there are difference LCAs? Let us add a node $z$ of whose LCA with $u_i$ is $z$.
+This takes only $2k$ iterations. ($k$ to get $T$, and another $k$ to get the final result.) But what happens if there are different LCAs? Let us add a node $z$ whose LCA with $u_i$ is $y$.
 
 $$ \quad y --- $$
 
