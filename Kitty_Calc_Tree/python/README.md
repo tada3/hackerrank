@@ -68,7 +68,7 @@ $$ = \sum_{i=1}^{k} (T - u_i \cdot d_i) \cdot u_i $$
 
 This takes only $2k$ iterations. ($k$ to get $T$, and another $k$ to get the final result.) But what happes when there are difference LCAs? Let us add a node $z$ of whose LCA with $u_i$ is $z$.
 
-$$ \quad y \_\_\_\_\_ $$
+$$ \quad y -------- $$
 
 $$ \quad \quad e / \quad \quad \quad \quad \backslash f $$
 
