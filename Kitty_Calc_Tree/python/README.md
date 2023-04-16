@@ -74,7 +74,7 @@ $$ \quad \quad e / \quad \quad \quad \quad \backslash f $$
 
 $$ \quad \quad / \quad \quad \quad \quad \quad \backslash $$
 
-$$ \quad \quad x \quad ---- \quad z $$
+$$ \quad \quad x \quad --- \quad z $$
 
 $$ d_1 / \quad \backslash d_2 \quad ... \quad \backslash d_k $$
 
