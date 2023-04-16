@@ -35,7 +35,8 @@ $$b = dist(v, x)$$
 $$T = u \cdot a + v \cdot b$$
 $$S = u \cdot v \cdot dist(u, v) \\
 = u \cdot v \cdot (a + b) \\
-    \quad \quad \quad \quad \quad \quad \quad = (T - u \cdot a) \cdot u + (T - v \cdot b) \cdot v$$
+aaaa \quad \quad \quad \quad \quad \quad \quad = (T - u \cdot a) \cdot u + (T - v \cdot b) \cdot v
+$$
 
 Generalizing this, we get this for multiple nodes sharing the same LCA:
 $$
