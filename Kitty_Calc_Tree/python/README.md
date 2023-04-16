@@ -29,32 +29,29 @@ $$ / \quad \quad \backslash $$
 $$ u \quad \quad \quad v $$
 
 We can decompose $u \cdot v \cdot dist(u, v)$ into the sum of each node's contribution as follows:
-$$ a = dist(u, x)$$
-$$ b = dist(v, x)$$
-$$ T = u \cdot a + v \cdot b$$
-$$ S = u \cdot v \cdot dist(u, v) \\
-= u \cdot v \cdot (a + b) \\
-aaaa \quad \quad \quad \quad \quad \quad \quad = (T - u \cdot a) \cdot u + (T - v \cdot b) \cdot v
-$$
+
+$$ a = dist(u, x) $$
+$$ b = dist(v, x) $$
+$$ T = u \cdot a + v \cdot b $$
+$$ S = u \cdot v \cdot dist(u, v) $$
+$$ = u \cdot v \cdot (a + b) $$
+$$ \quad \quad \quad \quad \quad \quad \quad = (T - u \cdot a) \cdot u + (T - v \cdot b) \cdot v $$
+
 
 Generalizing this, we get this for multiple nodes sharing the same LCA:
-$$
-    x \quad \_\_\_\_\_\_ \\
-d_1 / \quad \backslash d_2 \quad ... \quad \backslash d_k \\
-\quad / \quad \quad \backslash \quad \quad ... \quad \backslash \quad \\
-u_1 \quad \quad \quad u_2 \quad ... \quad u_k\\
-$$
 
-$$d_i = dist(u_i, x)$$
-$$T = \sum_{i=1}^{k} u_i \cdot d_i$$
+$$ x \quad \_\_\_\_\_\_ $$
+$$ d_1 / \quad \backslash d_2 \quad ... \quad \backslash d_k $$
+$$ \quad / \quad \quad \backslash \quad \quad ... \quad \backslash \quad $$
+$$ u_1 \quad \quad \quad u_2 \quad ... \quad u_k $$
+
+$$ d_i = dist(u_i, x) $$
+$$ T = \sum_{i=1}^{k} u_i \cdot d_i $$
 $$ S = \sum_{i, j} u_i \cdot u_j \cdot dist(u_i, u_j) $$
 $$ = \sum_{i, j} u_i \cdot u_j \cdot (d_i + d_j) $$
 $$ = \sum_{i=1}^{k} (T - u_i \cdot d_i) \cdot u_i $$
 
-
-This takes only $2k$ iterations. ($k$ to get $T$, and another $k$ to get the final result.)
-
-But what happes when there are difference LCAs? Let us add a node $z$ of whose LCA with $u_i$ is $z$.
+This takes only $2k$ iterations. ($k$ to get $T$, and another $k$ to get the final result.) But what happes when there are difference LCAs? Let us add a node $z$ of whose LCA with $u_i$ is $z$.
 
 $$ \quad y \_\_\_\_\_ $$
 $$ \quad \quad e / \quad \quad \quad \quad \backslash f $$
@@ -63,7 +60,6 @@ $$ \quad \quad x \quad \_\_\_\_\_\_ \quad \quad z $$
 $$ d_1 / \quad \backslash d_2 \quad ... \quad \backslash d_k $$
 $$ \quad / \quad \quad \backslash \quad \quad ... \quad \backslash \quad $$
 $$ u_1 \quad \quad \quad u_2 \quad ... \quad u_k $$
-
 
 Let
 
