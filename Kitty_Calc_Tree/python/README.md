@@ -24,13 +24,17 @@ In the problem, $u$, $v$ are only subset of the tree contained in the query set.
 Let us start with a simple case of 2 nodes.
 
 $$    x  $$
+
 $$ a \quad /  \quad \backslash \quad b $$
+
 $$ / \quad \quad \backslash $$
+
 $$ u \quad \quad \quad v $$
 
 We can decompose $u \cdot v \cdot dist(u, v)$ into the sum of each node's contribution as follows:
 
 $$ a = dist(u, x) $$
+
 $$ b = dist(v, x) $$
 $$ T = u \cdot a + v \cdot b $$
 $$ S = u \cdot v \cdot dist(u, v) $$
