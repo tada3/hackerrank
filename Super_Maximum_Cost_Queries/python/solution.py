@@ -31,9 +31,11 @@ def solve(tree, queries):
 	
 	for i in range(1, N-1):
 		u, v, w = tree[i]
+		print('uvw', u, v, w)
 		if u in cost_tab:
 			# Make sure u is new node
 			u, v = v, u
+		print('uvwX', u, v, w)
 		cost_tab[u] = {v: w}
 		cost_rank[w] = cost_rank.get(w, 0) + 1
 		for x, c in cost_tab[v].items():
