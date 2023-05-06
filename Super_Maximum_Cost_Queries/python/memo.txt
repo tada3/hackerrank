@@ -1,0 +1,2 @@
+export OUTPUT_PATH="./output.txt"
+python3 solution.py < sample.input
