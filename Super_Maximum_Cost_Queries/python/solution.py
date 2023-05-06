@@ -10,20 +10,23 @@ from operator import itemgetter
 from itertools import groupby
 
 def build_path_counts(t):
+	# sort by w
 	t1 = sorted(t, key=itemgetter(2))
 
 	roots = [0] * (len(t1) + 2)
 	sizes = {}
-	path_counts = []
-	count = 0
-	key_idx = []
+	keys = []
+	vals = []
+	# accumulated counts
+	count = 0 
+	# groupby by w
 	for k, g in groupby(t1, key=itemgetter(2)):
 		for u, v, _ in g:
 			count += add_path(u, v, roots, sizes)
-		path_counts.append(count)	
-		key_idx.append(k)
+		vals.append(count)	
+		keys.append(k)
 
-	return key_idx, path_counts
+	return keys, vals
 
 def add_path(u, v, rs, ss):
 	added = 0
@@ -40,7 +43,7 @@ def add_path(u, v, rs, ss):
 			added = add_new_existing(v, u, rs, ss)
 		else:
 			# case 3: both existing nodes
-			added = add_existing_existing2(u, v, rs, ss)
+			added = add_existing_existing(u, v, rs, ss)
 	return added
 
 
@@ -81,7 +84,7 @@ def add_new_existing(u, v, rs, ss):
 	return nodes_in_v
 	
 
-def add_existing_existing2(u, v, rs, ss):
+def add_existing_existing(u, v, rs, ss):
 	# path(x, y)
 	nodes_in_u = get_size(u, rs, ss)
 	nodes_in_v = get_size(v, rs, ss)
@@ -114,16 +117,16 @@ def solve(tree, queries):
     # Write your code here
 	# 1. Build path_counts
 	# path_counts[c]: number of paths of cost c
-	key_idx, path_counts = build_path_counts(tree)
+	costs, path_counts = build_path_counts(tree)
 		
 	# 2. Process queries 
 	Q = len(queries)
 	result = [0] * Q
 	for i in range(Q):
 		l, r = queries[i]
-		left = bisect.bisect_left(key_idx, l)
-		right = bisect.bisect_left(key_idx, r, lo=left)
-		if right >= len(key_idx) or key_idx[right] > r:
+		left = bisect.bisect_left(costs, l)
+		right = bisect.bisect_left(costs, r, lo=left)
+		if right >= len(costs) or costs[right] > r:
 			right -= 1
 		left -= 1
 		left_val = path_counts[left] if left >= 0 else 0
