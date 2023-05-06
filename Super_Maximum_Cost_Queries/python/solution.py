@@ -14,13 +14,13 @@ def build_path_counts(t):
 
 	roots = [0] * (len(t1) + 2)
 	sizes = {}
-	path_counts = {}
+	path_counts = []
 	count = 0
 	key_idx = []
 	for k, g in groupby(t1, key=itemgetter(2)):
 		for u, v, _ in g:
 			count += add_path(u, v, roots, sizes)
-		path_counts[k] = count	
+		path_counts.append(count)	
 		key_idx.append(k)
 
 	return key_idx, path_counts
@@ -126,8 +126,8 @@ def solve(tree, queries):
 		if right >= len(key_idx) or key_idx[right] > r:
 			right -= 1
 		left -= 1
-		left_val = path_counts[key_idx[left]] if left >= 0 else 0
-		right_val = path_counts[key_idx[right]]
+		left_val = path_counts[left] if left >= 0 else 0
+		right_val = path_counts[right]
 		result[i] = right_val - left_val
 	return result
 
