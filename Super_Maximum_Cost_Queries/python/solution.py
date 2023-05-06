@@ -21,15 +21,14 @@ def solve(tree, queries):
 	N = len(tree) + 1
 	# 1. Build cost table 
 	# cost_tab[U][V]: cost of the path {U, V}
-	#cost_tab = [ [0] * NP for i in range(NP) ]
 	cost_tab = {}
 	cost_rank = {}
-	#processed = [False] * NP
 
 	u, v, w = tree[0]
 	cost_tab[u] = {v: w}
 	cost_tab[v] = {u: w}
 	cost_rank[w] = 1
+	
 	for i in range(1, N-1):
 		u, v, w = tree[i]
 		if u in cost_tab:
