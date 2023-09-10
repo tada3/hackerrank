@@ -9,6 +9,9 @@ class Node:
       self.right = None
 
 
+    def is_leaf(self):
+        return self.left is None and self.right is None
+    
     def add_left(self, l):
         self.left = Node(l, self.depth + 1)   
         return self.left     
@@ -17,13 +20,35 @@ class Node:
         self.right = Node(r, self.depth + 1)    
         return self.right
 
-    def explore(self):
+    def explorexxx(self):
         path = []
         if self.left is not None:
             path.extend(self.left.explore())
         path.append(self.index)
         if self.right is not None:
             path.extend(self.right.explore())
+        return path
+    
+    def explore(self):
+        children_added = {}
+        path = []
+        stack = deque()
+        stack.append(self)
+
+        while stack:
+            node = stack.pop()
+            if node.is_leaf():
+                path.append(node.index)
+            else:
+                if node.index in children_added:
+                    path.append(node.index)
+                else:
+                    if node.right is not None:
+                        stack.append(node.right)
+                    stack.append(node)
+                    if node.left is not None:
+                        stack.append(node.left)
+                    children_added[node.index] = True                
         return path
     
     def query(self, q):
